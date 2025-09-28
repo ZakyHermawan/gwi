@@ -10,6 +10,8 @@ Window {
     visible: true
     title: qsTr("Hello World")
 
+    visibility: "FullScreen"
+
     property string latestButton: "Setup"
     property string sourceFileName: "IntensitySlider.qml"
 
