@@ -37,7 +37,6 @@ int main(int argc, char *argv[])
 
     QTextStream in(fptr);
     std::string content = in.readAll().toStdString();
-    fclose(fptr);
 
     fkyaml::node node = fkyaml::node::deserialize(content);
 
