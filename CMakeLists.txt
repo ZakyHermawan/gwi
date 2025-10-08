@@ -28,6 +28,8 @@ qt_add_qml_module(appgwi
         QML_FILES AmplificationPlot.qml
         SOURCES include/DataManager.hpp
         SOURCES src/DataManager.cpp
+        SOURCES include/SliderHandler.hpp
+        SOURCES src/SliderHandler.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

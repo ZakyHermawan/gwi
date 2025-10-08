@@ -9,6 +9,7 @@ ColumnLayout {
         onValueChanged: {
             // the value variable is coming from Main.qml
             sliderValue = parseInt(value * 100)
+            sliderHandler.changeSliderValue(sliderValue)
         }
         implicitWidth: 300
         implicitHeight: 50

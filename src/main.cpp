@@ -1,6 +1,7 @@
 #include "ButtonHandler.hpp"
 #include "StateManager.hpp"
 #include "DataManager.hpp"
+#include "SliderHandler.hpp"
 
 #include "fkYAML.hpp"
 
@@ -38,10 +39,12 @@ int main(int argc, char *argv[])
     fkyaml::node node = fkyaml::node::deserialize(content);
 
     ButtonHandler buttonHandler;
+    SliderHandler sliderHandler;
     StateManager stateManager;
     DataManager dataManager(node);
 
     engine.rootContext()->setContextProperty("buttonHandler", &buttonHandler);
+    engine.rootContext()->setContextProperty("sliderHandler", &sliderHandler);
     engine.rootContext()->setContextProperty("stateManager", &stateManager);
     engine.rootContext()->setContextProperty("dataManager", &dataManager);
 
