@@ -1,6 +1,8 @@
 #include "DataManager.hpp"
 
-DataManager::DataManager(fkyaml::node& root) : m_root{root} {
+DataManager::DataManager(fkyaml::node& root)
+    : m_root{root}
+{
     for (const auto& dataNode : root["light_sensor_data"]) {
         int intensityValue = dataNode.as_int();
 
@@ -12,7 +14,8 @@ DataManager::DataManager(fkyaml::node& root) : m_root{root} {
     }
 }
 
-int DataManager::getIntensityByIndex(int index) {
+int DataManager::getIntensityByIndex(int index)
+{
     assert((index >= 0 && index <= 30) && "Index must be within 0 <= index <= 30");
     return m_intensityValues.at(index);
 }

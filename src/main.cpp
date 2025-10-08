@@ -8,8 +8,10 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QFile>
+#include <QDir>
 
 #include <iostream>
+#include <cstdio>
 
 int main(int argc, char *argv[])
 {
@@ -22,18 +24,13 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-    engine.load("../Main.qml");
 
-		/*
-    QFile file(":/qt/qml/gwi/resources/example.yml");
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        std::cerr << "Error: Could not open file from Qt resources!" << std::endl;
-        return 1;
-    }
-		*/
+    auto resourceFolderName = getenv("RESOURCE_FOLDER_PATH");
+    auto mainQmlPath = QDir(resourceFolderName).filePath("../Main.qml");
+    auto examplePath = QDir(resourceFolderName).filePath("example.yml");
 
-		FILE* fptr;
-		fptr = fopen("/home/pione/ClonedRepo/gwi/resources/example.yml", "r+");
+    engine.load(mainQmlPath);
+    auto fptr = fopen(examplePath.toStdString().c_str(), "r+");
 
     QTextStream in(fptr);
     std::string content = in.readAll().toStdString();
@@ -48,5 +45,13 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("stateManager", &stateManager);
     engine.rootContext()->setContextProperty("dataManager", &dataManager);
 
-    return app.exec();
+    auto retval = app.exec();
+    if(retval != 0)
+    {
+        std::cerr << "ERROR: Qt application exited with status code: " << retval << std::endl;
+        exit(retval);
+    }
+    fclose(fptr);
+
+    return 0;
 }
