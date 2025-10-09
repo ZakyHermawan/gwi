@@ -3,6 +3,8 @@
 #include "DataManager.hpp"
 #include "SliderHandler.hpp"
 
+#include "RawDataModel.hpp"
+
 #include "fkYAML.hpp"
 
 #include <QApplication>
@@ -10,6 +12,7 @@
 #include <QQmlContext>
 #include <QFile>
 #include <QDir>
+#include <QSharedPointer>
 
 #include <iostream>
 #include <cstdio>
@@ -41,12 +44,15 @@ int main(int argc, char *argv[])
     ButtonHandler buttonHandler;
     SliderHandler sliderHandler;
     StateManager stateManager;
-    DataManager dataManager(node);
+    QSharedPointer<DataManager> dataManager{new DataManager(node)};
+    RawDataModel rawDataModel(dataManager);
 
     engine.rootContext()->setContextProperty("buttonHandler", &buttonHandler);
     engine.rootContext()->setContextProperty("sliderHandler", &sliderHandler);
     engine.rootContext()->setContextProperty("stateManager", &stateManager);
-    engine.rootContext()->setContextProperty("dataManager", &dataManager);
+    engine.rootContext()->setContextProperty("dataManager", dataManager.data());
+
+    engine.rootContext()->setContextProperty("rawDataModel", &rawDataModel);
 
     auto retval = app.exec();
     if(retval != 0)

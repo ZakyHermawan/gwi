@@ -9,11 +9,13 @@ class DataManager : public QObject
 {
     Q_OBJECT
     fkyaml::node m_root;
-    QList<int> m_intensityValues;
+    QList<float> m_intensityValues;
 
 public:
+    DataManager() = default;
     DataManager(fkyaml::node& root);
+    QList<float>& getIntensityValuesList();
 
 public slots:
-    Q_INVOKABLE int getIntensityByIndex(int index);
+    Q_INVOKABLE float getIntensityByIndex(int index);
 };

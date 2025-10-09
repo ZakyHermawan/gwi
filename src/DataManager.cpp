@@ -14,7 +14,7 @@ DataManager::DataManager(fkyaml::node& root)
     }
 }
 
-int DataManager::getIntensityByIndex(int index)
+float DataManager::getIntensityByIndex(int index)
 {
     assert((index >= 0 && index <= 30) && "Index must be within 0 <= index <= 30");
     return m_intensityValues.at(index);

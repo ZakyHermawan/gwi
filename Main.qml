@@ -8,8 +8,9 @@ Window {
     width: 1024
     height: 600
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("PCR Graphical User Interface")
 
+    property int value: 0
     property string latestButton: "Setup"
     property string sourceFileName: "IntensitySlider.qml"
 
@@ -73,6 +74,9 @@ Window {
         }
         else if(currentButton === "Amplification Plot") {
             sourceFileName = "AmplificationPlot.qml"
+        }
+        else if(currentButton == "Raw Data") {
+            sourceFileName = "RawData.qml"
         }
 
         else {

@@ -30,6 +30,9 @@ qt_add_qml_module(appgwi
         SOURCES src/DataManager.cpp
         SOURCES include/SliderHandler.hpp
         SOURCES src/SliderHandler.cpp
+        QML_FILES RawData.qml
+        SOURCES include/RawDataModel.hpp
+        SOURCES src/RawDataModel.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
