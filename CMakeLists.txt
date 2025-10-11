@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick Charts)
 
+find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
+
 qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appgwi
@@ -33,6 +35,8 @@ qt_add_qml_module(appgwi
         QML_FILES RawData.qml
         SOURCES include/RawDataModel.hpp
         SOURCES src/RawDataModel.cpp
+        SOURCES include/HardwareController.hpp
+        SOURCES src/HardwareController.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -53,6 +57,7 @@ target_include_directories(appgwi PRIVATE
 target_link_libraries(appgwi PUBLIC
     Qt6::Quick
     Qt6::Charts
+		${WIRINGPI_LIBRARIES}
 )
 
 include(GNUInstallDirs)
