@@ -58,11 +58,11 @@ void DataManager::addSensorReading(float lux)
     // -- Update the current index and cycle through 0-30
     updateSensorReading(m_currentIndex, lux);
     
-		/**
+    /**
      * Move to next index, cycle back to 0 after 30
-		 * This acts as a foolproof so long as list is capped,
-		 * though sensor reads only until 30 (HardwareController)
-		 */
+     * This acts as a foolproof so long as list is capped,
+     * though sensor reads only until 30 (HardwareController)
+     */
     m_currentIndex = (m_currentIndex + 1) % m_intensityValues.size();
     
     emit indexChanged(m_currentIndex);

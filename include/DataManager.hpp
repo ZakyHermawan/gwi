@@ -10,7 +10,7 @@ class DataManager : public QObject
     Q_OBJECT
     fkyaml::node m_root;
     QList<float> m_intensityValues;
-		int m_currentIndex;
+    int m_currentIndex;
 
 public:
     DataManager() = default;

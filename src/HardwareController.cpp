@@ -19,20 +19,20 @@ HardwareController::HardwareController(uint8_t sensorAddr, int ledPin, QObject* 
     , m_sensorAddr(sensorAddr)
     , m_ledPin(ledPin)
     , m_ledClockDivisor(640)
-    , m_ledPwmRange(101)	// To accomodate for 0-100 integer value range from the slider
+    , m_ledPwmRange(101)    // To accomodate for 0-100 integer value range from the slider
     , m_currentIntensity(0)
     , m_i2cFd(-1)
-		, m_pcrCycle(0)
+        , m_pcrCycle(0)
     , m_isInitialized(false)
 {
 
     m_sensorTimer = new QTimer(this);
 
-		/**
-		 * Sensor reads every (...) ms
-		 * This implementation does not yet expect DMF control signals,
-		 * which would make sensor timer intervals irrelevant to the application 
-		 */
+    /**
+     * Sensor reads every (...) ms
+     * This implementation does not yet expect DMF control signals,
+     * which would make sensor timer intervals irrelevant to the application 
+     */
     m_sensorTimer->setInterval(2000); 
     connect(m_sensorTimer, &QTimer::timeout, this, &HardwareController::onSensorTimer);
 }
@@ -59,7 +59,7 @@ HardwareController::~HardwareController()
  */
 bool HardwareController::begin()
 {
-    //QMutexLocker locker(&m_hardwareMutex);	// Currently unused
+    //QMutexLocker locker(&m_hardwareMutex);    // Currently unused
     
     qDebug() << "HardwareController: Initializing...";
     
@@ -151,11 +151,11 @@ void HardwareController::setLEDIntensity(int intensity)
         return;
     }
     
-    //QMutexLocker locker(&m_hardwareMutex);	// Currently unused
+    //QMutexLocker locker(&m_hardwareMutex);    // Currently unused
     writeLedPwm(intensity);
     m_currentIntensity = intensity;
     
-    emit ledIntensityChanged(intensity);	// Currently unused
+    emit ledIntensityChanged(intensity);    // Currently unused
     qDebug() << "HardwareController: LED intensity set to" << m_currentIntensity << "%";
 }
 
@@ -180,11 +180,11 @@ void HardwareController::stopSensorReading()
 
 void HardwareController::onSensorTimer()
 {
-		if (m_pcrCycle++ < 31) {
-				performSensorReading();
-				qDebug() << "HardwareController: pcrCycle:" << m_pcrCycle;
-		}
-		else stopSensorReading();
+        if (m_pcrCycle++ < 31) {
+                performSensorReading();
+                qDebug() << "HardwareController: pcrCycle:" << m_pcrCycle;
+        }
+        else stopSensorReading();
 }
 
 void HardwareController::performSensorReading()
@@ -193,7 +193,7 @@ void HardwareController::performSensorReading()
         return;
     }
     
-    //QMutexLocker locker(&m_hardwareMutex);	// Currently unused
+    //QMutexLocker locker(&m_hardwareMutex);    // Currently unused
     
     if (!writeToSensor(ONETIME_H_RES_MODE_2)) {
         emit errorOccurred("Failed to write to sensor");
@@ -203,7 +203,7 @@ void HardwareController::performSensorReading()
     // -- Wait for measurement (120ms typical, 180ms max)
     QThread::msleep(180);
     
-		// -- Read sensor data
+    // -- Read sensor data
     float lux = readLuxFromSensor();
     if (lux >= 0) {
         emit sensorDataReady(lux);

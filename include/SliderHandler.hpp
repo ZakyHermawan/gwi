@@ -8,16 +8,16 @@ class SliderHandler : public QObject
     Q_OBJECT
 
 private:
-		QTimer* m_updateTimer;
-		int m_currentValue;
+    QTimer* m_updateTimer;
+    int m_currentValue;
 
 public:
-		SliderHandler(QObject* parent = nullptr);
+    SliderHandler(QObject* parent = nullptr);
 
 public slots:
     void changeSliderValue(int currValue);
-		void onUpdateTimer();
+    void onUpdateTimer();
 
 signals:
-		void ledIntensityRequested(int currValue);
+    void ledIntensityRequested(int currValue);
 };

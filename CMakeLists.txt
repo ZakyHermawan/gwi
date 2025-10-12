@@ -57,7 +57,7 @@ target_include_directories(appgwi PRIVATE
 target_link_libraries(appgwi PUBLIC
     Qt6::Quick
     Qt6::Charts
-		${WIRINGPI_LIBRARIES}
+	${WIRINGPI_LIBRARIES}
 )
 
 include(GNUInstallDirs)

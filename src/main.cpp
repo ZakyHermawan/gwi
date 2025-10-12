@@ -46,16 +46,15 @@ int main(int argc, char *argv[])
     SliderHandler sliderHandler;
     StateManager stateManager;
     QSharedPointer<DataManager> dataManager{new DataManager(node)};
-		//DataManager dataMan;
     RawDataModel rawDataModel(dataManager);
-		HardwareController hardwareController(0x23, 18);
+        HardwareController hardwareController(0x23, 18);
 
-		// -- SliderHandler and HardwareController connections
+    // -- SliderHandler and HardwareController connections
     QObject::connect(&sliderHandler, &SliderHandler::ledIntensityRequested,
                      &hardwareController, &HardwareController::setLEDIntensity);
     
-		// -- HardwareController and DataManager connections
-		QObject::connect(&hardwareController, &HardwareController::sensorDataReady,
+    // -- HardwareController and DataManager connections
+    QObject::connect(&hardwareController, &HardwareController::sensorDataReady,
                  dataManager.data(), &DataManager::addSensorReading);
 
     if (!hardwareController.begin()) {
@@ -63,7 +62,6 @@ int main(int argc, char *argv[])
         return 1;
     }
     
-		//dataMan.resetIndex();
     hardwareController.startSensorReading();
 
     engine.rootContext()->setContextProperty("buttonHandler", &buttonHandler);
