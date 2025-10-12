@@ -43,11 +43,11 @@ int main(int argc, char *argv[])
     fkyaml::node node = fkyaml::node::deserialize(content);
 
     ButtonHandler buttonHandler;
-    SliderHandler sliderHandler;
+    SliderHandler sliderHandler(&app);
     StateManager stateManager;
     QSharedPointer<DataManager> dataManager{new DataManager(node)};
     RawDataModel rawDataModel(dataManager);
-    HardwareController hardwareController(0x23, 18);
+    HardwareController hardwareController(0x23, 18, &app);
 
     // -- SliderHandler and HardwareController connections
     QObject::connect(&sliderHandler, &SliderHandler::ledIntensityRequested,
@@ -68,14 +68,13 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sliderHandler", &sliderHandler);
     engine.rootContext()->setContextProperty("stateManager", &stateManager);
     engine.rootContext()->setContextProperty("dataManager", dataManager.data());
-    engine.rootContext()->setContextProperty("hardwareController", &hardwareController);
     engine.rootContext()->setContextProperty("rawDataModel", &rawDataModel);
 
     auto retval = app.exec();
     if(retval != 0)
     {
         std::cerr << "ERROR: Qt application exited with status code: " << retval << std::endl;
-        exit(retval);
+        return retval;
     }
     fclose(fptr);
 

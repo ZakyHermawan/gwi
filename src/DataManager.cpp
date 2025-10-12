@@ -26,46 +26,50 @@ float DataManager::getIntensityByIndex(int index)
     return m_intensityValues.at(index);
 }
 
-void DataManager::updateSensorReading(int index, float lux)
+void DataManager::updateSensorReading(float lux)
 {
-    if (index < 0 || index >= 31) {
-        qDebug() << "DataManager: Cannot update index" << index << "- out of range";
-        return;
+    if (m_currentIndex < 0 || m_currentIndex >= 31) {
+        throw std::runtime_error("Current index" + std::to_string(m_currentIndex) + "out of range");
     }
     
-    // Update the value at the specified index
-    m_intensityValues[index] = lux;
+    // Update the value at the specified m_currentIndex
+    m_intensityValues[m_currentIndex] = lux;
     
     try {
         if (m_root.contains("light_sensor_data") && m_root["light_sensor_data"].is_sequence()) {
             auto& sequence = m_root["light_sensor_data"].get_value_ref<fkyaml::node::sequence_type&>();
-            if (index < static_cast<int>(sequence.size())) {
-                sequence[index] = lux;
+            if (m_currentIndex < static_cast<int>(sequence.size())) {
+                sequence[m_currentIndex] = lux;
             }
         }
     } catch (const std::exception& e) {
-        qDebug() << "DataManager: Failed to update YAML node:" << e.what();
+        throw std::runtime_error("Failed to update YAML node - " + std::string(e.what()));
     }
     
-    qDebug() << "DataManager: Updated index" << index << "with value" << lux << "lx";
-    
-    // Emit signal to notify UI
-    emit dataUpdated(index, lux);
+    /* Reached if absolutely no exception is thrown */
+    qDebug() << "DataManager: Updated m_currentIndex" << m_currentIndex << "with value" << lux << "lx";
+    emit dataUpdated(m_currentIndex, lux);
+    /************************************************/
 }
 
 void DataManager::addSensorReading(float lux)
 {
     // -- Update the current index and cycle through 0-30
-    updateSensorReading(m_currentIndex, lux);
+    try {
+        updateSensorReading(lux);
+        /**
+        * Move to next index, cycle back to 0 after 30
+        * This acts as a foolproof so long as list is capped,
+        * though sensor reads only until 30 (HardwareController)
+        */
+        m_currentIndex = (m_currentIndex + 1) % m_intensityValues.size();
+        emit indexChanged(m_currentIndex);
+
+    } catch (const std::runtime_error& e) {
+        qFatal("DataManager: Fatal error - %s", e.what());
+ 
+    }
     
-    /**
-     * Move to next index, cycle back to 0 after 30
-     * This acts as a foolproof so long as list is capped,
-     * though sensor reads only until 30 (HardwareController)
-     */
-    m_currentIndex = (m_currentIndex + 1) % m_intensityValues.size();
-    
-    emit indexChanged(m_currentIndex);
 }
 
 void DataManager::resetIndex()

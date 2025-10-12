@@ -22,7 +22,7 @@ HardwareController::HardwareController(uint8_t sensorAddr, int ledPin, QObject* 
     , m_ledPwmRange(101)    // To accomodate for 0-100 integer value range from the slider
     , m_currentIntensity(0)
     , m_i2cFd(-1)
-        , m_pcrCycle(0)
+    , m_pcrCycle(0)
     , m_isInitialized(false)
 {
 

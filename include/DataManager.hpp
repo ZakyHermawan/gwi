@@ -19,13 +19,14 @@ public:
 
 public slots:
     Q_INVOKABLE float getIntensityByIndex(int index);
-
-    void updateSensorReading(int index, float lux);
     void addSensorReading(float lux);
     void resetIndex();
     
     // -- Get current index being updated
     Q_INVOKABLE int getCurrentIndex() const;
+
+private slots:
+    void updateSensorReading(float lux);
 
 signals:
     // -- Signal when data at specific index is updated
