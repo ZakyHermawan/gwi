@@ -180,11 +180,11 @@ void HardwareController::stopSensorReading()
 
 void HardwareController::onSensorTimer()
 {
-        if (m_pcrCycle++ < 31) {
-                performSensorReading();
-                qDebug() << "HardwareController: pcrCycle:" << m_pcrCycle;
-        }
-        else stopSensorReading();
+    if (m_pcrCycle++ < 31) {
+            performSensorReading();
+            qDebug() << "HardwareController: pcrCycle:" << m_pcrCycle;
+    }
+    else stopSensorReading();
 }
 
 void HardwareController::performSensorReading()
