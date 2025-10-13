@@ -1,11 +1,15 @@
 #include <QDebug>
 #include <QThread>
 
+#include <cmath>
+
+#ifdef HAVE_WIRINGPI
 #include <wiringPi.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <linux/i2c-dev.h>
 #include <sys/ioctl.h>
+#endif
 
 #include "HardwareController.hpp"
 
@@ -43,6 +47,7 @@ HardwareController::HardwareController(uint8_t sensorAddr, int ledPin, QObject* 
  */
 HardwareController::~HardwareController()
 {
+#ifdef HAVE_WIRINGPI
     if (m_i2cFd >= 0) {
         close(m_i2cFd);
     }
@@ -50,8 +55,12 @@ HardwareController::~HardwareController()
     if (m_isInitialized) {
         writeLedPwm(0);
     }
+#else
+    qDebug() << "Mockup destructor called";
+#endif
 }
 
+#ifdef HAVE_WIRINGPI
 /**
  * Public Slot : Calls all hardware initializer methods
  * @return <bool> true if all initializers successfully executed, false otherwise
@@ -143,7 +152,22 @@ bool HardwareController::beginSensor(int adapter)
     qDebug() << "HardwareController: Sensor initialized on I2C adapter" << adapter;
     return true;
 }
+#else
+bool HardwareController::begin()
+{
+    qDebug() << "HardwareController: Initializing...";
 
+    m_i2cFd = 1;
+
+    m_isInitialized = true;
+    emit hardwareInitialized(true);
+    qDebug() << "HardwareController: Initialization complete";
+
+    return true;
+}
+#endif
+
+#ifdef HAVE_WIRINGPI
 void HardwareController::setLEDIntensity(int intensity)
 {
     if (!m_isInitialized) {
@@ -163,6 +187,18 @@ void HardwareController::writeLedPwm(int intensity)
 {
     pwmWrite(m_ledPin, intensity);
 }
+#else
+void HardwareController::setLEDIntensity(int intensity)
+{
+    if (!m_isInitialized) {
+        qDebug() << "HardwareController: Hardware not initialized";
+        return;
+    }
+
+    m_currentIntensity = intensity;
+    qDebug() << "HardwareController: LED intensity set to" << m_currentIntensity << "%";
+}
+#endif
 
 void HardwareController::startSensorReading()
 {
@@ -187,6 +223,7 @@ void HardwareController::onSensorTimer()
     else stopSensorReading();
 }
 
+#ifdef HAVE_WIRINGPI
 void HardwareController::performSensorReading()
 {
     if (!m_isInitialized || m_i2cFd < 0) {
@@ -234,3 +271,20 @@ float HardwareController::readLuxFromSensor()
     qDebug() << "HardwareController: Light detected:" << lux << "lx";
     return lux;
 }
+#else
+void HardwareController::performSensorReading()
+{
+    if (!m_isInitialized || m_i2cFd < 0) {
+        return;
+    }
+    
+    QThread::msleep(180);
+    
+    float lux;
+    if (m_pcrCycle <= 24) lux = pow(2, m_pcrCycle) * 0.00001;
+    else lux = 187 - pow(0.5, (m_pcrCycle - 28));
+    if (lux >= 0) {
+        emit sensorDataReady(lux);
+    }
+}
+#endif

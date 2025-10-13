@@ -25,6 +25,7 @@ private:
     //QMutex m_hardwareMutex;   // Currently unused
     bool m_isInitialized;
 
+#ifdef HAVE_WIRINGPI
     /**
      * Hardware methods adopted from
      * https://github.com/arkandzprogaming/pcr-instrument-mproc.git
@@ -33,12 +34,13 @@ private:
     bool beginWiringPi();
     bool beginLedPwm();
     bool beginSensor(int adapter = 1);
-
+    
     // -- LED control method
     void writeLedPwm(int intensity);
 
     // -- Sensor iteraction methods
     bool writeToSensor(uint8_t mode);
+#endif
         
 public:
     explicit HardwareController(uint8_t sensorAddr = 0x23, int ledPin = 18, QObject* parent = nullptr);
@@ -62,12 +64,16 @@ public slots:
     void performSensorReading();
 
 private slots:
+#ifdef HAVE_WIRINGPI
     float readLuxFromSensor();
+#endif
     void onSensorTimer();
 
 signals:
     void hardwareInitialized(bool success);
     void ledIntensityChanged(int intensity);
     void sensorDataReady(float lux);
+#ifdef HAVE_WIRINGPI
     void errorOccurred(const QString& error);
+#endif
 };
