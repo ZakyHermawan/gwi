@@ -52,6 +52,12 @@ QVariant RawDataModel::data(const QModelIndex &index, int role) const
             return QString("%1").arg(value);
         }
 
+    case XValueRole:
+        return index.row() - 1;
+
+    case YValueRole:
+        return m_dataManager->getIntensityByIndex(index.row() - 1);
+
     default:
         break;
     }
@@ -61,7 +67,11 @@ QVariant RawDataModel::data(const QModelIndex &index, int role) const
 
 QHash<int, QByteArray> RawDataModel::roleNames() const
 {
-    return { {Qt::DisplayRole, "displays"} };
+    QHash<int, QByteArray> roles;
+    roles[Qt::DisplayRole] = "displays"; // For raw data
+    roles[XValueRole] = "xValue"; // For amplification plot
+    roles[YValueRole] = "yValue"; // For amplification plot
+    return roles;
 }
 
 void RawDataModel::onDataUpdated(int index, float value)

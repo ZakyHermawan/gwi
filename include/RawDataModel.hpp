@@ -14,7 +14,16 @@ class RawDataModel : public QAbstractTableModel
     Q_OBJECT
     QML_ELEMENT
 
+    // hold pointer to the data manager
+    // to interact with light intensity data
+    QSharedPointer<DataManager> m_dataManager;
+
 public:
+    enum AmplificationPlotRoles {
+        XValueRole = Qt::UserRole + 1,
+        YValueRole
+    };
+
     RawDataModel(QSharedPointer<DataManager> dataManager);
 
     // 32 rows, 1 for the column name, 31 for cycle 0 until 31
@@ -30,9 +39,4 @@ public:
 
 private slots:
     void onDataUpdated(int index, float value);
-
-private:
-    // hold pointer to the data manager
-    // to interact with light intensity data
-    QSharedPointer<DataManager> m_dataManager;
 };
