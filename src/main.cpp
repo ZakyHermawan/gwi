@@ -18,6 +18,27 @@
 #include <iostream>
 #include <cstdio>
 
+#include <type_traits>
+
+// Take variadic number of FILE* as argument, then close each of them.
+template<typename... Args>
+static void close_files(Args... files) {
+    // Make sure all argument is FILE*.
+    static_assert((std::is_same_v<Args, FILE*> && ...),
+                  "All arguments must be of type FILE*");
+
+    // This lambda will be called for each file pointer.
+    auto close_if_valid = [](FILE* f) {
+        if (f != nullptr) {
+            std::cout << "Closing file..." << std::endl;
+            fclose(f);
+        }
+    };
+
+    // The fold expression applies the lambda to each argument.
+    (close_if_valid(files), ...);
+}
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -33,14 +54,26 @@ int main(int argc, char *argv[])
     auto resourceFolderName = getenv("RESOURCE_FOLDER_PATH");
     auto mainQmlPath = QDir(resourceFolderName).filePath("../Main.qml");
     auto examplePath = QDir(resourceFolderName).filePath("example.yml");
+    auto lastLedIntensity = QDir(resourceFolderName).filePath("last_led_intensity.txt");
 
     engine.load(mainQmlPath);
-    auto fptr = fopen(examplePath.toStdString().c_str(), "r+");
+    auto exampleFptr = fopen(examplePath.toStdString().c_str(), "r+");
+    auto ledFptr = fopen(lastLedIntensity.toStdString().c_str(), "r+");
 
-    QTextStream in(fptr);
-    std::string content = in.readAll().toStdString();
+    QTextStream exampleIn(exampleFptr);
+    QTextStream ledIn(ledFptr);
 
-    fkyaml::node node = fkyaml::node::deserialize(content);
+    auto exampleContent = exampleIn.readAll().toStdString();
+    bool ok;
+    auto ledContent = ledIn.readLine().trimmed().toUInt(&ok);
+
+    if (!ok) {
+        qFatal() << "Conversion failed, but the original line was suspicious.";
+        close_files(exampleFptr, ledFptr);
+        return 1;
+    }
+
+    fkyaml::node node = fkyaml::node::deserialize(exampleContent);
 
     ButtonHandler buttonHandler;
     SliderHandler sliderHandler(&app);
@@ -59,7 +92,7 @@ int main(int argc, char *argv[])
 
     if (!hardwareController.begin()) {
         std::cerr << "Main: Failed to initialize hardware!" << std::endl;
-        fclose(fptr);
+        close_files(exampleFptr, ledFptr);
         return 1;
     }
 
@@ -75,10 +108,10 @@ int main(int argc, char *argv[])
     if(retval != 0)
     {
         std::cerr << "ERROR: Qt application exited with status code: " << retval << std::endl;
-        fclose(fptr);
+        close_files(exampleFptr, ledFptr);
         return retval;
     }
-    fclose(fptr);
 
+    close_files(exampleFptr, ledFptr);
     return 0;
 }

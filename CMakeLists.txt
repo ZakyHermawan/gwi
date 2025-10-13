@@ -55,6 +55,7 @@ qt_add_qml_module(appgwi
         SOURCES src/RawDataModel.cpp
         SOURCES include/HardwareController.hpp
         SOURCES src/HardwareController.cpp
+        RESOURCES resources/last_led_intensity.txt
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
