@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     StateManager stateManager;
     QSharedPointer<DataManager> dataManager{new DataManager(node)};
     RawDataModel rawDataModel(dataManager);
-    HardwareController hardwareController(0x23, 18, &app);
+    HardwareController hardwareController(0x23, 1, 18, &app);
 
     // -- SliderHandler and HardwareController connections
     QObject::connect(&sliderHandler, &SliderHandler::ledIntensityRequested,

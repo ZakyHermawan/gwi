@@ -16,6 +16,7 @@ private:
     int m_currentIntensity;
 
     // -- BH1750 sensor control
+    int m_i2cAdapter;
     int m_i2cFd;
     uint8_t m_sensorAddr;
     int m_pcrCycle;
@@ -33,7 +34,7 @@ private:
      */
     bool beginWiringPi();
     bool beginLedPwm();
-    bool beginSensor(int adapter = 1);
+    bool beginSensor();
     
     // -- LED control method
     void writeLedPwm(int intensity);
@@ -43,7 +44,7 @@ private:
 #endif
         
 public:
-    explicit HardwareController(uint8_t sensorAddr = 0x23, int ledPin = 18, QObject* parent = nullptr);
+    explicit HardwareController(uint8_t sensorAddr = 0x23, int adapter = 1, int ledPin = 18, QObject* parent = nullptr);
     ~HardwareController();
 
     // -- BH1750 sensor operation modes

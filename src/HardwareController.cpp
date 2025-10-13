@@ -18,9 +18,10 @@
  * @param <int> ledPin BCM pin of PWM0 (use `gpio readall`)
  *
  */
-HardwareController::HardwareController(uint8_t sensorAddr, int ledPin, QObject* parent)
+HardwareController::HardwareController(uint8_t sensorAddr, int adapter, int ledPin, QObject* parent)
     : QObject(parent)
     , m_sensorAddr(sensorAddr)
+    , m_i2cAdapter(adapter)
     , m_ledPin(ledPin)
     , m_ledClockDivisor(640)
     , m_ledPwmRange(101)    // To accomodate for 0-100 integer value range from the slider
@@ -29,6 +30,16 @@ HardwareController::HardwareController(uint8_t sensorAddr, int ledPin, QObject* 
     , m_pcrCycle(0)
     , m_isInitialized(false)
 {
+
+#ifdef HAVE_WIRINGPI
+    char filename[16];
+    snprintf(filename, sizeof(filename), "/dev/i2c-%d", m_i2cAdapter);
+    
+    m_i2cFd = open(filename, O_RDWR);
+    if (m_i2cFd < 0) {
+        qFatal("HardwareController: Failed to open I2C bus %s. Aborting...", filename);
+    }
+#endif
 
     m_sensorTimer = new QTimer(this);
 
@@ -131,17 +142,8 @@ bool HardwareController::beginLedPwm()
  * @return <bool> true if initializing successfully executed, false otherwise
  *
  */
-bool HardwareController::beginSensor(int adapter)
+bool HardwareController::beginSensor()
 {
-    char filename[16];
-    snprintf(filename, 15, "/dev/i2c-%d", adapter);
-    
-    m_i2cFd = open(filename, O_RDWR);
-    if (m_i2cFd < 0) {
-        qDebug() << "HardwareController: Failed to open I2C bus" << filename;
-        return false;
-    }
-    
     if (ioctl(m_i2cFd, I2C_SLAVE, m_sensorAddr) < 0) {
         qDebug() << "HardwareController: Failed to connect to sensor at address" << Qt::hex << m_sensorAddr;
         close(m_i2cFd);
@@ -149,7 +151,7 @@ bool HardwareController::beginSensor(int adapter)
         return false;
     }
     
-    qDebug() << "HardwareController: Sensor initialized on I2C adapter" << adapter;
+    qDebug() << "HardwareController: Sensor initialized on I2C adapter" << m_i2cAdapter;
     return true;
 }
 #else
