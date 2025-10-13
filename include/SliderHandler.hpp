@@ -7,14 +7,14 @@ class SliderHandler : public QObject
 {
     Q_OBJECT
 
-private:
     QTimer* m_updateTimer;
     int m_currentValue;
 
 public:
-    SliderHandler(QObject* parent = nullptr);
+    SliderHandler(int currentValue, QObject* parent = nullptr);
 
 public slots:
+    int getCurrentValue() const;
     void changeSliderValue(int currValue);
     void onUpdateTimer();
 

@@ -10,7 +10,6 @@ Window {
     visible: true
     title: qsTr("PCR Graphical User Interface")
 
-    property int value: 0
     property string latestButton: "Setup"
     property string sourceFileName: "IntensitySlider.qml"
 

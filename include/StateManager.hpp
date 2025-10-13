@@ -18,6 +18,7 @@ enum class ButtonStates
 class StateManager : public QObject
 {
     Q_OBJECT
+
     ButtonStates m_buttonState;
 
 public slots:

@@ -8,7 +8,6 @@ class HardwareController : public QObject {
 
     Q_OBJECT
 
-private:
     // -- PWM-LED control
     const int m_ledPin;
     int m_ledClockDivisor;  // Defaulted to 32 --> 640

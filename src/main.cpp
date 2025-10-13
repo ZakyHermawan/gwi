@@ -54,18 +54,17 @@ int main(int argc, char *argv[])
     auto resourceFolderName = getenv("RESOURCE_FOLDER_PATH");
     auto mainQmlPath = QDir(resourceFolderName).filePath("../Main.qml");
     auto examplePath = QDir(resourceFolderName).filePath("example.yml");
-    auto lastLedIntensity = QDir(resourceFolderName).filePath("last_led_intensity.txt");
+    auto lastLedIntensityPath = QDir(resourceFolderName).filePath("last_led_intensity.txt");
 
-    engine.load(mainQmlPath);
     auto exampleFptr = fopen(examplePath.toStdString().c_str(), "r+");
-    auto ledFptr = fopen(lastLedIntensity.toStdString().c_str(), "r+");
+    auto ledFptr = fopen(lastLedIntensityPath.toStdString().c_str(), "r+");
 
     QTextStream exampleIn(exampleFptr);
     QTextStream ledIn(ledFptr);
 
     auto exampleContent = exampleIn.readAll().toStdString();
     bool ok;
-    auto ledContent = ledIn.readLine().trimmed().toUInt(&ok);
+    auto lastLedIntensity = ledIn.readLine().trimmed().toUInt(&ok);
 
     if (!ok) {
         qFatal() << "Conversion failed, but the original line was suspicious.";
@@ -76,10 +75,13 @@ int main(int argc, char *argv[])
     fkyaml::node node = fkyaml::node::deserialize(exampleContent);
 
     ButtonHandler buttonHandler;
-    SliderHandler sliderHandler(&app);
+    SliderHandler sliderHandler(lastLedIntensity, &app);
+
     StateManager stateManager;
-    QSharedPointer<DataManager> dataManager{new DataManager(node)};
+    QSharedPointer<DataManager> dataManager(new DataManager(node));
+
     RawDataModel rawDataModel(dataManager);
+
     HardwareController hardwareController(0x23, 1, 18, &app);
 
     // -- SliderHandler and HardwareController connections
@@ -102,7 +104,9 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("sliderHandler", &sliderHandler);
     engine.rootContext()->setContextProperty("stateManager", &stateManager);
     engine.rootContext()->setContextProperty("dataManager", dataManager.data());
+
     engine.rootContext()->setContextProperty("rawDataModel", &rawDataModel);
+    engine.load(mainQmlPath);
 
     auto retval = app.exec();
     if(retval != 0)
@@ -113,5 +117,12 @@ int main(int argc, char *argv[])
     }
 
     close_files(exampleFptr, ledFptr);
+
+    // write last led value to last_led_intensity.txt
+    ledFptr = fopen(lastLedIntensityPath.toStdString().c_str(), "w");
+    auto lastLedValue = sliderHandler.getCurrentValue();
+    fprintf(ledFptr, "%d", lastLedValue);
+    close_files(ledFptr);
+
     return 0;
 }

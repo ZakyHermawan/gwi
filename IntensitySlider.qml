@@ -6,10 +6,24 @@ ColumnLayout {
     property int sliderValue:  0
     Slider {
         id: mySlider
+        value: {
+            if(sliderHandler != null)
+            {
+                // slider value is a real number from 0 to 1
+                return sliderHandler.getCurrentValue() / 100
+            }
+            else
+            {
+                return 0
+            }
+        }
+
         onValueChanged: {
-            // the value variable is coming from Main.qml
             sliderValue = parseInt(value * 100)
-            sliderHandler.changeSliderValue(sliderValue)
+            if(sliderHandler != null)
+            {
+                sliderHandler.changeSliderValue(sliderValue)
+            }
         }
         implicitWidth: 300
         implicitHeight: 50
