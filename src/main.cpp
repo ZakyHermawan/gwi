@@ -2,6 +2,7 @@
 #include "StateManager.hpp"
 #include "DataManager.hpp"
 #include "SliderHandler.hpp"
+#include "HardwareController.hpp"
 
 #include "RawDataModel.hpp"
 
@@ -42,23 +43,38 @@ int main(int argc, char *argv[])
     fkyaml::node node = fkyaml::node::deserialize(content);
 
     ButtonHandler buttonHandler;
-    SliderHandler sliderHandler;
+    SliderHandler sliderHandler(&app);
     StateManager stateManager;
     QSharedPointer<DataManager> dataManager{new DataManager(node)};
     RawDataModel rawDataModel(dataManager);
+    HardwareController hardwareController(0x23, 1, 18, &app);
+
+    // -- SliderHandler and HardwareController connections
+    QObject::connect(&sliderHandler, &SliderHandler::ledIntensityRequested,
+                     &hardwareController, &HardwareController::setLEDIntensity);
+    
+    // -- HardwareController and DataManager connections
+    QObject::connect(&hardwareController, &HardwareController::sensorDataReady,
+                 dataManager.data(), &DataManager::addSensorReading);
+
+    if (!hardwareController.begin()) {
+        std::cerr << "Main: Failed to initialize hardware!" << std::endl;
+        return 1;
+    }
+    
+    hardwareController.startSensorReading();
 
     engine.rootContext()->setContextProperty("buttonHandler", &buttonHandler);
     engine.rootContext()->setContextProperty("sliderHandler", &sliderHandler);
     engine.rootContext()->setContextProperty("stateManager", &stateManager);
     engine.rootContext()->setContextProperty("dataManager", dataManager.data());
-
     engine.rootContext()->setContextProperty("rawDataModel", &rawDataModel);
 
     auto retval = app.exec();
     if(retval != 0)
     {
         std::cerr << "ERROR: Qt application exited with status code: " << retval << std::endl;
-        exit(retval);
+        return retval;
     }
     fclose(fptr);
 

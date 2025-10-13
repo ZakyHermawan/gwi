@@ -3,6 +3,8 @@
 RawDataModel::RawDataModel(QSharedPointer<DataManager> dataManager)
     : m_dataManager{dataManager}
 {
+    connect(m_dataManager.data(), &DataManager::dataUpdated,
+            this, &RawDataModel::onDataUpdated);
 }
 
 int RawDataModel::rowCount(const QModelIndex &) const
@@ -28,7 +30,7 @@ QVariant RawDataModel::data(const QModelIndex &index, int role) const
             }
             else
             {
-                return QString("Intensity Value");
+                return QString("Intensity Value (lx)");
             }
         }
         else
@@ -60,4 +62,16 @@ QVariant RawDataModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> RawDataModel::roleNames() const
 {
     return { {Qt::DisplayRole, "displays"} };
+}
+
+void RawDataModel::onDataUpdated(int index, float value)
+{
+    int tableRow = index + 1; // +1 because row 0 is the header
+    
+    QModelIndex startIndex = createIndex(tableRow, 1);
+    QModelIndex endIndex = startIndex;
+    
+    emit dataChanged(startIndex, endIndex, {Qt::DisplayRole});
+    
+    qDebug() << "RawDataModel: Updated row" << tableRow << "with value:" << value;
 }

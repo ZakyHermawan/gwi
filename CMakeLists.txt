@@ -6,6 +6,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Quick Charts)
 
+# Detect if building on a RPi
+if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm" OR CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
+    set(IS_RASPBERRY_PI TRUE)
+    message(STATUS "Building for Raspberry Pi (${CMAKE_SYSTEM_PROCESSOR})")
+else()
+    set(IS_RASPBERRY_PI FALSE)
+    message(STATUS "Building for development platform (${CMAKE_SYSTEM_PROCESSOR})")
+endif()
+
+# Only find WiringPi on an RPi
+if(IS_RASPBERRY_PI)
+    find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
+    if(NOT WIRINGPI_LIBRARIES)
+        message(FATAL_ERROR "WiringPi library not found on Raspberry Pi")
+    endif()
+    add_compile_definitions(HAVE_WIRINGPI)
+endif()
+
+# find_library(WIRINGPI_LIBRARIES NAMES wiringPi)
+
 qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appgwi
@@ -33,6 +53,8 @@ qt_add_qml_module(appgwi
         QML_FILES RawData.qml
         SOURCES include/RawDataModel.hpp
         SOURCES src/RawDataModel.cpp
+        SOURCES include/HardwareController.hpp
+        SOURCES src/HardwareController.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -54,6 +76,10 @@ target_link_libraries(appgwi PUBLIC
     Qt6::Quick
     Qt6::Charts
 )
+
+if(IS_RASPBERRY_PI)
+    target_link_libraries(appgwi PUBLIC ${WIRINGPI_LIBRARIES})
+endif()
 
 include(GNUInstallDirs)
 install(TARGETS appgwi

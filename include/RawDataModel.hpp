@@ -28,6 +28,9 @@ public:
 
     QHash<int, QByteArray> roleNames() const override;
 
+private slots:
+    void onDataUpdated(int index, float value);
+
 private:
     // hold pointer to the data manager
     // to interact with light intensity data
