@@ -30,6 +30,8 @@ ColumnLayout {
             ValueAxis {
                 id: axisX
                 titleText: "Cycle"
+                tickCount: 16
+                labelFormat: "%d"
 
                 min: 0
                 max: 30
