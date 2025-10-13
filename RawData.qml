@@ -9,7 +9,7 @@ ColumnLayout {
         Layout.fillWidth: true
 
         implicitHeight: 420
-        implicitWidth: 500
+        implicitWidth: 700
 
         columnSpacing: 150
         rowSpacing: 1
