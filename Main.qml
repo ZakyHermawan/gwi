@@ -275,7 +275,7 @@ Window {
                 text: "Save Plot"
                 font.pixelSize: 30
                 Layout.preferredHeight: 50
-                Layout.preferredWidth: 150
+                Layout.preferredWidth: 350
                 Layout.bottomMargin: 10
                 palette.button: "lightblue"
                 onClicked: buttonHandler.savePlotClick()

@@ -59,9 +59,10 @@ int main(int argc, char *argv[])
 
     if (!hardwareController.begin()) {
         std::cerr << "Main: Failed to initialize hardware!" << std::endl;
+        fclose(fptr);
         return 1;
     }
-    
+
     hardwareController.startSensorReading();
 
     engine.rootContext()->setContextProperty("buttonHandler", &buttonHandler);
@@ -74,6 +75,7 @@ int main(int argc, char *argv[])
     if(retval != 0)
     {
         std::cerr << "ERROR: Qt application exited with status code: " << retval << std::endl;
+        fclose(fptr);
         return retval;
     }
     fclose(fptr);
