@@ -82,6 +82,4 @@ void RawDataModel::onDataUpdated(int index, float value)
     QModelIndex endIndex = startIndex;
     
     emit dataChanged(startIndex, endIndex, {Qt::DisplayRole});
-    
-    qDebug() << "RawDataModel: Updated row" << tableRow << "with value:" << value;
 }

@@ -1,7 +1,6 @@
 #include "StateManager.hpp"
 
 #include <QString>
-#include <QDebug>
 
 void StateManager::changeCurrentState(const QString &buttonName)
 {
@@ -33,5 +32,4 @@ void StateManager::changeCurrentState(const QString &buttonName)
     {
         m_buttonState = ButtonStates::END;
     }
-    qDebug() << "Current State: " << buttonName;
 }

@@ -17,7 +17,6 @@
 
 #include <iostream>
 #include <cstdio>
-
 #include <type_traits>
 
 // Take variadic number of FILE* as argument, then close each of them.
@@ -30,7 +29,6 @@ static void close_files(Args... files) {
     // This lambda will be called for each file pointer.
     auto close_if_valid = [](FILE* f) {
         if (f != nullptr) {
-            std::cout << "Closing file..." << std::endl;
             fclose(f);
         }
     };

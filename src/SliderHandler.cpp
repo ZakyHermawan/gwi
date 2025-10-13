@@ -1,7 +1,5 @@
 #include "SliderHandler.hpp"
 
-#include <QDebug>
-
 SliderHandler::SliderHandler(int currentValue, QObject* parent)
     : m_currentValue(currentValue), QObject(parent)
 {
@@ -19,9 +17,7 @@ int SliderHandler::getCurrentValue() const
 
 void SliderHandler::changeSliderValue(int currValue)
 {
-    qDebug() << "Current slider value: " << currValue;
     m_currentValue = currValue;
-    
     m_updateTimer->start();
 }
 
