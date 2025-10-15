@@ -7,5 +7,5 @@ class ButtonHandler : public QObject
 
 public slots:
     void handleButtonClick(const QString &buttonName);
-    void savePlotClick();
+    void saveDataClick();
 };

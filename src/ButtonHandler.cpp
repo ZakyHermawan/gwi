@@ -7,6 +7,6 @@ void ButtonHandler::handleButtonClick(const QString &buttonName)
 {
 }
 
-void ButtonHandler::savePlotClick()
+void ButtonHandler::saveDataClick()
 {
 }
