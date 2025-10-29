@@ -29,6 +29,7 @@ void ButtonHandler::handleButtonClick(const QString &buttonName)
 
 void ButtonHandler::handleRunStart()
 {
+    m_dataManager->resetIntensityValues();
     if (!m_hardwareController->begin()) {
         throw std::runtime_error("Main: Failed to initialize hardware!");
     }

@@ -47,6 +47,15 @@ void DataManager::save_data(std::string& fileName)
     ofs << root;
 }
 
+void DataManager::resetIntensityValues()
+{
+    m_currentIndex = 0;
+    for(uint8_t i = 0; i < 31; ++i)
+    {
+        m_intensityValues[i] = 0.0f;
+    }
+}
+
 float DataManager::getIntensityByIndex(int index)
 {
     assert((index >= 0 && index <= 30) && "Index must be within 0 <= index <= 30");
