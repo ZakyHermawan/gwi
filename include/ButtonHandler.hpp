@@ -5,14 +5,16 @@
 #include <QSharedPointer>
 
 #include "DataManager.hpp"
+#include "HardwareController.hpp"
 
 class ButtonHandler : public QObject
 {
     Q_OBJECT
     QSharedPointer<DataManager> m_dataManager;
+    QSharedPointer<HardwareController> m_hardwareController;
 
 public:
-    ButtonHandler(QSharedPointer<DataManager> dm, QObject* parent = nullptr);
+    ButtonHandler(QSharedPointer<DataManager> dm, QSharedPointer<HardwareController> hwc, QObject* parent = nullptr);
     void handleRun();
 
 public slots:

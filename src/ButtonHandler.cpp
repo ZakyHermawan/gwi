@@ -5,8 +5,8 @@
 #include <QSharedPointer>
 #include <QDir>
 
-ButtonHandler::ButtonHandler(QSharedPointer<DataManager> dm, QObject* parent)
-    : QObject(parent), m_dataManager{dm}
+ButtonHandler::ButtonHandler(QSharedPointer<DataManager> dm, QSharedPointer<HardwareController> hwc, QObject* parent)
+    : QObject(parent), m_dataManager{dm}, m_hardwareController{hwc}
 {
 }
 
@@ -21,6 +21,11 @@ void ButtonHandler::handleButtonClick(const QString &buttonName)
 void ButtonHandler::handleRun()
 {
     // start experiment here
+    if (!m_hardwareController->begin()) {
+        throw std::runtime_error("Main: Failed to initialize hardware!");
+    }
+
+    m_hardwareController->startSensorReading();
 }
 
 void ButtonHandler::saveDataClick()

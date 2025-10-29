@@ -76,27 +76,19 @@ int main(int argc, char *argv[])
 
     StateManager stateManager;
     QSharedPointer<DataManager> dataManager(new DataManager(node));
-    ButtonHandler buttonHandler(dataManager, nullptr);
-
     RawDataModel rawDataModel(dataManager);
 
-    HardwareController hardwareController(0x23, 1, 18, &app);
+    // HardwareController hardwareController(0x23, 1, 18, &app);
+    QSharedPointer<HardwareController> hardwareController(new HardwareController(0x23, 1, 18, &app));
+    ButtonHandler buttonHandler(dataManager, hardwareController);
 
     // -- SliderHandler and HardwareController connections
     QObject::connect(&sliderHandler, &SliderHandler::ledIntensityRequested,
-                     &hardwareController, &HardwareController::setLEDIntensity);
+                     hardwareController.data(), &HardwareController::setLEDIntensity);
     
     // -- HardwareController and DataManager connections
-    QObject::connect(&hardwareController, &HardwareController::sensorDataReady,
+    QObject::connect(hardwareController.data(), &HardwareController::sensorDataReady,
                  dataManager.data(), &DataManager::addSensorReading);
-
-    if (!hardwareController.begin()) {
-        std::cerr << "Main: Failed to initialize hardware!" << std::endl;
-        close_files(exampleFptr, ledFptr);
-        return 1;
-    }
-
-    hardwareController.startSensorReading();
 
     engine.rootContext()->setContextProperty("buttonHandler", &buttonHandler);
     engine.rootContext()->setContextProperty("sliderHandler", &sliderHandler);
