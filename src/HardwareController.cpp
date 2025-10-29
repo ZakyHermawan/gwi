@@ -162,6 +162,7 @@ bool HardwareController::begin()
     m_i2cFd = 1;
 
     m_isInitialized = true;
+    m_pcrCycle = 0;
     emit hardwareInitialized(true);
     qDebug() << "HardwareController: Initialization complete";
 
