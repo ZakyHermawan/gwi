@@ -72,11 +72,11 @@ int main(int argc, char *argv[])
 
     fkyaml::node node = fkyaml::node::deserialize(exampleContent);
 
-    ButtonHandler buttonHandler;
     SliderHandler sliderHandler(lastLedIntensity, &app);
 
     StateManager stateManager;
     QSharedPointer<DataManager> dataManager(new DataManager(node));
+    ButtonHandler buttonHandler(dataManager, nullptr);
 
     RawDataModel rawDataModel(dataManager);
 

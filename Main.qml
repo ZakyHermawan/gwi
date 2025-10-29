@@ -14,7 +14,6 @@ Window {
     property string sourceFileName: "IntensitySlider.qml"
 
     function updateButton(currentButton) {
-        console.log("latest button: " + latestButton + ", Current button: " + currentButton)
         if(latestButton === "Setup") {
             setupButton.palette.button = "Red"
         }

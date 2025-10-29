@@ -1,4 +1,6 @@
 #include <QDebug>
+#include <fstream>
+
 #include "DataManager.hpp"
 
 DataManager::DataManager(fkyaml::node& root)
@@ -18,6 +20,31 @@ DataManager::DataManager(fkyaml::node& root)
 QList<float>& DataManager::getIntensityValuesList()
 {
     return m_intensityValues;
+}
+
+void DataManager::save_data(std::string& fileName)
+{
+    std::ofstream ofs(fileName);
+
+    // the element of root is interpreted as first sequence
+    auto root = m_root[0];
+    const float THRESHOLD = 0.1;
+
+    uint8_t index = 0;
+    for(auto& light_sensor_data: root["light_sensor_data"])
+    {
+        auto intensity = getIntensityByIndex(index);
+
+        // handle case when number is too small (e.g. 2e-05)
+        if(std::abs(intensity) < THRESHOLD)
+        {
+            intensity = 0.0f;
+        }
+
+        light_sensor_data = intensity;
+        ++index;
+    }
+    ofs << root;
 }
 
 float DataManager::getIntensityByIndex(int index)

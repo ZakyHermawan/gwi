@@ -17,6 +17,7 @@ public:
     DataManager() = default;
     DataManager(fkyaml::node& root);
     QList<float>& getIntensityValuesList();
+    void save_data(std::string& fileName);
 
 public slots:
     Q_INVOKABLE float getIntensityByIndex(int index);
