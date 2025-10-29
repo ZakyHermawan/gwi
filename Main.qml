@@ -10,6 +10,7 @@ Window {
     visible: true
     title: qsTr("PCR Graphical User Interface")
 
+    property bool inputBlocked: false
     property string latestButton: "Setup"
     property string sourceFileName: "IntensitySlider.qml"
 
@@ -41,28 +42,28 @@ Window {
 
 
         if(currentButton === "Setup") {
-            setupButton.palette.button = "Yellow"
+            setupButton.palette.button = "Blue"
         }
         else if(currentButton === "Run") {
-            runButton.palette.button = "Yellow"
+            runButton.palette.button = "Blue"
         }
         else if(currentButton === "Analysis") {
-            analysisButton.palette.button = "Yellow"
+            analysisButton.palette.button = "Blue"
         }
         else if(currentButton === "Amplification Plot") {
-            amplificationPlotButton.palette.button = "Yellow"
+            amplificationPlotButton.palette.button = "Blue"
         }
         else if(currentButton === "Standard Curve") {
-            standardCurveButton.palette.button = "Yellow"
+            standardCurveButton.palette.button = "Blue"
         }
         else if(currentButton === "Raw Data") {
-            rawDataButton.palette.button = "Yellow"
+            rawDataButton.palette.button = "Blue"
         }
         else if(currentButton === "Summary") {
-            summaryButton.palette.button = "Yellow"
+            summaryButton.palette.button = "Blue"
         }
         else {
-            endButton.palette.button = "Yellow"
+            endButton.palette.button = "Blue"
         }
 
         latestButton = currentButton
@@ -110,7 +111,9 @@ Window {
                     width: 250
                     text: "Setup"
                     font.pixelSize: 30
-                    palette.button: "yellow"
+                    palette.button: "Blue"
+                    enabled: !window.inputBlocked
+
                     onClicked: {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
@@ -126,11 +129,14 @@ Window {
                     id: runButton
                     width: 250
                     text: "Run"
+                    objectName: "runButton"
                     font.pixelSize: 30
                     palette.button: "red"
+
                     onClicked: {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
+                        window.inputBlocked = !window.inputBlocked;
                         updateButton("Run")
                     }
                 }
@@ -145,6 +151,8 @@ Window {
                     text: "Analysis"
                     font.pixelSize: 30
                     palette.button: "red"
+                    enabled: !window.inputBlocked
+
                     onClicked: {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
@@ -162,6 +170,8 @@ Window {
                     text: "Amplification Plot"
                     font.pixelSize: 30
                     palette.button: "red"
+                    enabled: !window.inputBlocked
+
                     onClicked: {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
@@ -179,6 +189,8 @@ Window {
                     text: "Standard Curve"
                     font.pixelSize: 30
                     palette.button: "red"
+                    enabled: !window.inputBlocked
+
                     onClicked: {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
@@ -196,6 +208,8 @@ Window {
                     text: "Raw Data"
                     font.pixelSize: 30
                     palette.button: "red"
+                    enabled: !window.inputBlocked
+
                     onClicked: {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
@@ -213,6 +227,8 @@ Window {
                     text: "Summary"
                     font.pixelSize: 30
                     palette.button: "red"
+                    enabled: !window.inputBlocked
+
                     onClicked: {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
@@ -230,6 +246,8 @@ Window {
                     text: "End"
                     font.pixelSize: 30
                     palette.button: "red"
+                    enabled: !window.inputBlocked
+
                     onClicked: {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
@@ -276,9 +294,10 @@ Window {
                 Layout.preferredWidth: 350
                 Layout.bottomMargin: 10
                 palette.button: "lightblue"
+                enabled: !window.inputBlocked
+
                 onClicked: buttonHandler.saveDataClick()
             }
         }
     }
 }
-

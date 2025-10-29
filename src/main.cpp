@@ -3,8 +3,8 @@
 #include "DataManager.hpp"
 #include "SliderHandler.hpp"
 #include "HardwareController.hpp"
-
 #include "RawDataModel.hpp"
+#include "RunButtonlEventFilter.hpp"
 
 #include "fkYAML.hpp"
 
@@ -14,6 +14,7 @@
 #include <QFile>
 #include <QDir>
 #include <QSharedPointer>
+#include <QQuickWindow>
 
 #include <iostream>
 #include <cstdio>
@@ -97,6 +98,20 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("rawDataModel", &rawDataModel);
     engine.load(mainQmlPath);
+
+    // install run button event filter
+    QObjectList rootObjects = engine.rootObjects();
+    if (!rootObjects.isEmpty()) {
+        QObject* rootItem = rootObjects.first();
+        QObject* runButton = rootItem->findChild<QObject*>("runButton");
+
+        if (runButton) {
+            RunButtonEventFilter* RunButtonFilter = new RunButtonEventFilter(&app);
+            runButton->installEventFilter(RunButtonFilter); // Install filter directly on the button
+        } else {
+            qWarning() << "Could not find 'runButton' object in the QML hierarchy to install event filter. Ensure it is defined and fully loaded.";
+        }
+    }
 
     auto retval = app.exec();
     if(retval != 0)

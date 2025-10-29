@@ -12,20 +12,33 @@ ButtonHandler::ButtonHandler(QSharedPointer<DataManager> dm, QSharedPointer<Hard
 
 void ButtonHandler::handleButtonClick(const QString &buttonName)
 {
-    if(buttonName == "Run")
-    {
-        handleRun();
+    // The C++ event filter has already updated the button's text and the global state.
+    // We dispatch based on the *new* text value:
+
+    if (buttonName == "Stop") {
+        // User clicked "Run" -> Text changed to "Stop" -> START the hardware.
+        handleRunStart();
+    } else if (buttonName == "Run") {
+        // User clicked "Stop" -> Text changed back to "Run" -> STOP the hardware.
+        handleRunStop();
+    } else {
+        // Handle other menu buttons (Setup, Analysis, etc.)
+        qDebug() << "Button clicked:" << buttonName;
     }
 }
 
-void ButtonHandler::handleRun()
+void ButtonHandler::handleRunStart()
 {
-    // start experiment here
     if (!m_hardwareController->begin()) {
         throw std::runtime_error("Main: Failed to initialize hardware!");
     }
 
     m_hardwareController->startSensorReading();
+}
+
+void ButtonHandler::handleRunStop()
+{
+    m_hardwareController->stopSensorReading();
 }
 
 void ButtonHandler::saveDataClick()

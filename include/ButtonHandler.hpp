@@ -15,7 +15,8 @@ class ButtonHandler : public QObject
 
 public:
     ButtonHandler(QSharedPointer<DataManager> dm, QSharedPointer<HardwareController> hwc, QObject* parent = nullptr);
-    void handleRun();
+    void handleRunStart();
+    void handleRunStop();
 
 public slots:
     void handleButtonClick(const QString &buttonName);
