@@ -38,13 +38,13 @@ QVariant RawDataModel::data(const QModelIndex &index, int role) const
             // the list of intensity values only contains 31 elements
             if(index.row() > 31)
             {
-                return QString("");
+                return QVariant();
             }
 
             // cycle number
             if(index.column() == 0)
             {
-                return QString("%1").arg(index.row() - 1);
+                return QString("%1").arg(index.row());
             }
 
             // intensity value
@@ -53,7 +53,7 @@ QVariant RawDataModel::data(const QModelIndex &index, int role) const
         }
 
     case XValueRole:
-        return index.row() - 1;
+        return index.row();
 
     case YValueRole:
         return m_dataManager->getIntensityByIndex(index.row() - 1);

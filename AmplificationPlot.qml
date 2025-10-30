@@ -33,14 +33,13 @@ ColumnLayout {
                 tickCount: 16
                 labelFormat: "%d"
 
-                min: 0
+                min: 1
                 max: 30
             }
 
             ValueAxis {
                 id: axisY
                 titleText: "Fluorescence Intensity"
-
                 min: 0
             }
 
@@ -51,7 +50,6 @@ ColumnLayout {
                 axisX: axisX
                 axisY: axisY
             }
-
         }
 
         VXYModelMapper {
@@ -61,7 +59,9 @@ ColumnLayout {
             series: lineSeries
             xColumn: 0
             yColumn: 1
-        }
 
+            // The model starts plotting from row 1 (index 1)
+            firstRow: 1
+        }
     }
 }
