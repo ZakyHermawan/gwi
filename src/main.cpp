@@ -83,13 +83,16 @@ int main(int argc, char *argv[])
     QSharedPointer<HardwareController> hardwareController(new HardwareController(0x23, 1, 18, &app));
     ButtonHandler buttonHandler(dataManager, hardwareController);
 
-    // -- SliderHandler and HardwareController connections
+    // SliderHandler and HardwareController connections
     QObject::connect(&sliderHandler, &SliderHandler::ledIntensityRequested,
                      hardwareController.data(), &HardwareController::setLEDIntensity);
     
-    // -- HardwareController and DataManager connections
+    // HardwareController and DataManager connections
     QObject::connect(hardwareController.data(), &HardwareController::sensorDataReady,
                  dataManager.data(), &DataManager::addSensorReading);
+
+    // Shutdown OS (linux) or close app (non-linux) when end button is pressed
+    QObject::connect(&buttonHandler, &ButtonHandler::exitApp, &app, QApplication::closeAllWindows, Qt::QueuedConnection);
 
     engine.rootContext()->setContextProperty("buttonHandler", &buttonHandler);
     engine.rootContext()->setContextProperty("sliderHandler", &sliderHandler);

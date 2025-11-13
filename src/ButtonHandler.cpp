@@ -4,6 +4,9 @@
 #include <QDebug>
 #include <QSharedPointer>
 #include <QDir>
+#include <QApplication>
+
+#include <cstdlib>
 
 ButtonHandler::ButtonHandler(QSharedPointer<DataManager> dm, QSharedPointer<HardwareController> hwc, QObject* parent)
     : QObject(parent), m_dataManager{dm}, m_hardwareController{hwc}
@@ -15,13 +18,26 @@ void ButtonHandler::handleButtonClick(const QString &buttonName)
     // The C++ event filter has already updated the button's text and the global state.
     // We dispatch based on the *new* text value:
 
-    if (buttonName == "Stop") {
+    if (buttonName == "Stop")
+    {
         // User clicked "Run" -> Text changed to "Stop" -> START the hardware.
         handleRunStart();
-    } else if (buttonName == "Run") {
+    }
+    else if (buttonName == "Run")
+    {
         // User clicked "Stop" -> Text changed back to "Run" -> STOP the hardware.
         handleRunStop();
-    } else {
+    }
+    else if(buttonName == "End")
+    {
+#ifdef __linux__
+        // just shutdown the system if this is linux (embedded)
+        system("shutdown -P now");
+#else
+        QApplication::quit();
+#endif
+    }
+    else {
         // Handle other menu buttons (Setup, Analysis, etc.)
         qDebug() << "Button clicked:" << buttonName;
     }

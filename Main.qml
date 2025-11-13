@@ -74,7 +74,7 @@ Window {
         else if(currentButton === "Amplification Plot") {
             sourceFileName = "AmplificationPlot.qml"
         }
-        else if(currentButton == "Raw Data") {
+        else if(currentButton === "Raw Data") {
             sourceFileName = "RawData.qml"
         }
 
@@ -91,7 +91,7 @@ Window {
             Rectangle {
                 Layout.alignment: Qt.AlignLeft
                 Layout.preferredWidth: 250
-                Layout.preferredHeight: 80
+                Layout.preferredHeight: 70
                 Text {
                     anchors.fill: parent
                     font.pixelSize: 30
@@ -105,10 +105,11 @@ Window {
 
             Rectangle {
                 Layout.alignment: Qt.AlignLeft
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: 70
                 Button {
                     id: setupButton
                     width: 250
+                    height: 70
                     text: "Setup"
                     font.pixelSize: 30
                     palette.button: "Blue"
@@ -124,10 +125,11 @@ Window {
 
             Rectangle {
                 Layout.alignment: Qt.AlignLeft
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: 70
                 Button {
                     id: runButton
                     width: 250
+                    height: 70
                     text: "Run"
                     objectName: "runButton"
                     font.pixelSize: 30
@@ -144,10 +146,11 @@ Window {
 
             Rectangle {
                 Layout.alignment: Qt.AlignLeft
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: 70
                 Button {
                     id: analysisButton
                     width: 250
+                    height: 70
                     text: "Analysis"
                     font.pixelSize: 30
                     palette.button: "red"
@@ -163,10 +166,11 @@ Window {
 
             Rectangle {
                 Layout.alignment: Qt.AlignLeft
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: 70
                 Button {
                     id: amplificationPlotButton
                     width: 250
+                    height: 70
                     text: "Amplification Plot"
                     font.pixelSize: 30
                     palette.button: "red"
@@ -182,10 +186,11 @@ Window {
 
             Rectangle {
                 Layout.alignment: Qt.AlignLeft
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: 70
                 Button {
                     id: standardCurveButton
                     width: 250
+                    height: 70
                     text: "Standard Curve"
                     font.pixelSize: 30
                     palette.button: "red"
@@ -201,10 +206,11 @@ Window {
 
             Rectangle {
                 Layout.alignment: Qt.AlignLeft
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: 70
                 Button {
                     id: rawDataButton
                     width: 250
+                    height: 70
                     text: "Raw Data"
                     font.pixelSize: 30
                     palette.button: "red"
@@ -220,10 +226,11 @@ Window {
 
             Rectangle {
                 Layout.alignment: Qt.AlignLeft
-                Layout.preferredHeight: 60
+                Layout.preferredHeight: 70
                 Button {
                     id: summaryButton
                     width: 250
+                    height: 70
                     text: "Summary"
                     font.pixelSize: 30
                     palette.button: "red"
@@ -233,25 +240,6 @@ Window {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
                         updateButton("Summary")
-                    }
-                }
-            }
-
-            Rectangle {
-                Layout.alignment: Qt.AlignLeft
-                Layout.preferredHeight: 60
-                Button {
-                    id: endButton
-                    width: 250
-                    text: "End"
-                    font.pixelSize: 30
-                    palette.button: "red"
-                    enabled: !window.inputBlocked
-
-                    onClicked: {
-                        buttonHandler.handleButtonClick(text);
-                        stateManager.changeCurrentState(text);
-                        updateButton("End")
                     }
                 }
             }
@@ -280,24 +268,44 @@ Window {
 
             Item {
                 id: itemParent
-                Layout.fillHeight: true
+                Layout.preferredHeight: 450
                 Layout.fillWidth: true
                 Loader {
                     source: sourceFileName
                 }
             }
 
-            Button {
-                text: "Save Data"
-                font.pixelSize: 30
-                Layout.preferredHeight: 50
-                Layout.preferredWidth: 350
-                Layout.bottomMargin: 10
-                palette.button: "lightblue"
-                enabled: !window.inputBlocked
+            RowLayout {
+                Button {
+                    id: saveDataButton
+                    text: "Save Data"
+                    font.pixelSize: 30
+                    Layout.preferredHeight: 50
+                    Layout.preferredWidth: 350
+                    palette.button: "lightblue"
+                    enabled: !window.inputBlocked
 
-                onClicked: buttonHandler.saveDataClick()
+                    onClicked: buttonHandler.saveDataClick()
+                }
+
+                Button {
+                    id: endButton
+                    text: "End"
+                    font.pixelSize: 30
+                    Layout.leftMargin: 25
+                    Layout.preferredHeight: 50
+                    Layout.preferredWidth: 350
+                    palette.button: "lightblue"
+                    enabled: !window.inputBlocked
+
+                    onClicked: {
+                        buttonHandler.handleButtonClick(text);
+                        stateManager.changeCurrentState(text);
+                        updateButton("End")
+                    }
+                }
             }
         }
+
     }
 }
