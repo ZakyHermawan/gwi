@@ -77,6 +77,9 @@ Window {
         else if(currentButton === "Raw Data") {
             sourceFileName = "RawData.qml"
         }
+        else if(currentButton === "Standard Curve") {
+            sourceFileName = "StandardCurve.qml"
+        }
 
         else {
             sourceFileName = ""
