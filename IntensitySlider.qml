@@ -48,6 +48,7 @@ ColumnLayout {
                     if(dataManager) {
                         dataManager.getIntensityValuesSize()
                     }
+                    return ""
                 }
 
                 font.pointSize: 24
