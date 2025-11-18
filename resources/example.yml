@@ -4,7 +4,6 @@ led_intensity_level: 50 # level for light intensity from LED, 50 mean 50%
 # This timestamp represents 12:34 PM on November 17, 2022, in a time zone that is nine hours ahead of Coordinated Universal Time (UTC)
 explicit_datetime: !!timestamp 2022-11-17 12:34:56.78 +9
 light_sensor_data:
-  - 0
   - 1
   - 2
   - 3

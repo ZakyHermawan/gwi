@@ -7,8 +7,7 @@ ColumnLayout {
     Slider {
         id: mySlider
         value: {
-            if(sliderHandler != null)
-            {
+            if(sliderHandler) {
                 // slider value is a real number from 0 to 1
                 return sliderHandler.getCurrentValue() / 100
             }
@@ -20,8 +19,7 @@ ColumnLayout {
 
         onValueChanged: {
             sliderValue = parseInt(value * 100)
-            if(sliderHandler != null)
-            {
+            if(sliderHandler) {
                 sliderHandler.changeSliderValue(sliderValue)
             }
         }
@@ -34,5 +32,27 @@ ColumnLayout {
         text: "Light Intensity Level: " + sliderValue + " %"
         font.pointSize: 24
         leftPadding: 30
+    }
+
+    Rectangle {
+        Layout.topMargin: 10
+        RowLayout {
+            Text {
+                text: "Maximum number of cycle: "
+                font.pointSize: 24
+                leftPadding: 30
+            }
+
+            TextEdit {
+                text: {
+                    if(dataManager) {
+                        dataManager.getIntensityValuesSize()
+                    }
+                }
+
+                font.pointSize: 24
+                onTextChanged: dataManager.setIntensityValuesSize(text)
+            }
+        }
     }
 }

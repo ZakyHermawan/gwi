@@ -35,10 +35,10 @@ QVariant RawDataModel::data(const QModelIndex &index, int role) const
         }
         else
         {
-            // the list of intensity values only contains 31 elements
-            if(index.row() > 31)
+            // handle out of bound access
+            if(index.row() > m_dataManager->getIntensityValuesSize())
             {
-                return QVariant();
+                return QString();
             }
 
             // cycle number

@@ -30,11 +30,26 @@ ColumnLayout {
             ValueAxis {
                 id: axisX
                 titleText: "Cycle"
-                tickCount: 16
+                tickCount: {
+                    if(dataManager) {
+                        var numData = dataManager.getIntensityValuesSize()
+                        if(numData > 10) {
+                            return numData / 2
+                        }
+                        return numData
+                    }
+                    return 0
+                }
+
                 labelFormat: "%d"
 
                 min: 1
-                max: 30
+                max: {
+                    if(dataManager) {
+                        return dataManager.getIntensityValuesSize()
+                    }
+                    return 1
+                }
             }
 
             ValueAxis {
@@ -43,7 +58,7 @@ ColumnLayout {
                 min: 0
             }
 
-            LineSeries {
+            SplineSeries {
                 id: lineSeries
                 name: "intensity"
 

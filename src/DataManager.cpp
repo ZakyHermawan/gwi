@@ -50,15 +50,28 @@ void DataManager::save_data(std::string& fileName)
 void DataManager::resetIntensityValues()
 {
     m_currentIndex = 0;
-    for(uint8_t i = 0; i < 31; ++i)
+    for(uint8_t i = 0; i < m_intensityValues.size(); ++i)
     {
         m_intensityValues[i] = 0.0f;
     }
 }
 
+void DataManager::setIntensityValuesSize(int size)
+{
+    m_intensityValues.resize(size);
+}
+
+int DataManager::getIntensityValuesSize()
+{
+    return m_intensityValues.size();
+}
+
 float DataManager::getIntensityByIndex(int index)
 {
-    assert((index >= 0 && index <= 30) && "Index must be within 0 <= index <= 30");
+    if(index < 0 || index >= getIntensityValuesSize())
+    {
+        throw std::runtime_error("invalid intensityValues index access at " + std::to_string(index));
+    }
     return m_intensityValues.at(index);
 }
 
@@ -105,7 +118,6 @@ void DataManager::addSensorReading(float lux)
         qFatal("DataManager: Fatal error - %s", e.what());
  
     }
-    
 }
 
 void DataManager::resetIndex()

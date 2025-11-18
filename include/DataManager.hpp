@@ -24,7 +24,9 @@ public slots:
     Q_INVOKABLE float getIntensityByIndex(int index);
     void addSensorReading(float lux);
     void resetIndex();
-    
+    void setIntensityValuesSize(int size);
+    int getIntensityValuesSize();
+
     // -- Get current index being updated
     Q_INVOKABLE int getCurrentIndex() const;
 
