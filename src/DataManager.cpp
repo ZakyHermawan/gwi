@@ -133,13 +133,6 @@ void DataManager::addSensorReading(float lux)
     }
 }
 
-void DataManager::resetIndex()
-{
-    m_currentIndex = 0;
-    emit indexChanged(m_currentIndex);
-    qDebug() << "DataManager: Reset index to 0";
-}
-
 int DataManager::getCurrentIndex() const
 {
     return m_currentIndex;

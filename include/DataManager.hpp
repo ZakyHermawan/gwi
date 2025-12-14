@@ -34,7 +34,6 @@ public:
 public slots:
     Q_INVOKABLE float getIntensityByIndex(int index);
     void addSensorReading(float lux);
-    void resetIndex();
     void setIntensityValuesSize(int size);
     Q_INVOKABLE int getIntensityValuesSize() const;
 
