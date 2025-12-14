@@ -191,13 +191,7 @@ void HardwareController::writeLedPwm(int intensity)
 #else
 void HardwareController::setLEDIntensity(int intensity)
 {
-    if (!m_isInitialized) {
-        qDebug() << "HardwareController: Hardware not initialized";
-        return;
-    }
-
     m_currentIntensity = intensity;
-    qDebug() << "HardwareController: LED intensity set to" << m_currentIntensity << "%";
 }
 #endif
 
