@@ -66,8 +66,6 @@ HardwareController::~HardwareController()
     if (m_isInitialized) {
         writeLedPwm(0);
     }
-#else
-    qDebug() << "Mockup destructor called";
 #endif
 }
 

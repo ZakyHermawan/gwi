@@ -69,16 +69,6 @@ int DataManager::getIntensityValuesSize() const
     return m_intensityValues.size();
 }
 
-float DataManager::getConcentrationCoefficient() const
-{
-    return m_concentrationCoefficient;
-}
-
-void DataManager::setConcentrationCoefficient(float coefficient)
-{
-    m_concentrationCoefficient = coefficient;
-}
-
 float DataManager::getConcentrationMultiplier() const
 {
     return m_concentrationMultiplier;

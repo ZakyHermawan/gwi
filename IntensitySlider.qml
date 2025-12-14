@@ -68,7 +68,7 @@ ColumnLayout {
                     // Coefficient
                     text: {
                         if (dataManager) {
-                            return dataManager.getConcentrationCoefficient()
+                            return dataManager.concentrationCoefficient
                         }
                         return 1
                     }
@@ -78,7 +78,7 @@ ColumnLayout {
                         if (dataManager) {
                             var val = parseFloat(text);
                             if (!isNaN(val)) {
-                                dataManager.setConcentrationCoefficient(val)
+                                dataManager.concentrationCoefficient = val
                             }
                         }
                     }
