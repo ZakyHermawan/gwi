@@ -1,7 +1,7 @@
 #include "SliderHandler.hpp"
 
-SliderHandler::SliderHandler(int currentValue, QObject* parent)
-    : m_currentValue(currentValue), QObject(parent)
+SliderHandler::SliderHandler(QObject* parent)
+    : QObject(parent), m_currentValue{0}
 {
     // -- Timer for delayed operations (avoiding too frequent PWM updates)
     m_updateTimer = new QTimer(this);

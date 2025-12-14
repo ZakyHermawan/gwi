@@ -53,28 +53,14 @@ int main(int argc, char *argv[])
     auto resourceFolderName = getenv("RESOURCE_FOLDER_PATH");
     auto mainQmlPath = QDir(resourceFolderName).filePath("../Main.qml");
     auto examplePath = QDir(resourceFolderName).filePath("example.yml");
-    auto lastLedIntensityPath = QDir(resourceFolderName).filePath("last_led_intensity.txt");
 
     auto exampleFptr = fopen(examplePath.toStdString().c_str(), "r+");
-    auto ledFptr = fopen(lastLedIntensityPath.toStdString().c_str(), "r+");
-
     QTextStream exampleIn(exampleFptr);
-    QTextStream ledIn(ledFptr);
 
     auto exampleContent = exampleIn.readAll().toStdString();
-    bool ok;
-    auto lastLedIntensity = ledIn.readLine().trimmed().toUInt(&ok);
-
-    if (!ok) {
-        qFatal() << "Conversion failed, but the original line was suspicious.";
-        close_files(exampleFptr, ledFptr);
-        return 1;
-    }
-
     fkyaml::node node = fkyaml::node::deserialize(exampleContent);
 
-    SliderHandler sliderHandler(lastLedIntensity, &app);
-
+    SliderHandler sliderHandler(&app);
     StateManager stateManager;
     QSharedPointer<DataManager> dataManager(new DataManager(node));
     RawDataModel rawDataModel(dataManager);
@@ -120,17 +106,10 @@ int main(int argc, char *argv[])
     if(retval != 0)
     {
         std::cerr << "ERROR: Qt application exited with status code: " << retval << std::endl;
-        close_files(exampleFptr, ledFptr);
+        close_files(exampleFptr);
         return retval;
     }
 
-    close_files(exampleFptr, ledFptr);
-
-    // write last led value to last_led_intensity.txt
-    ledFptr = fopen(lastLedIntensityPath.toStdString().c_str(), "w");
-    auto lastLedValue = sliderHandler.getCurrentValue();
-    fprintf(ledFptr, "%d", lastLedValue);
-    close_files(ledFptr);
-
+    close_files(exampleFptr);
     return 0;
 }

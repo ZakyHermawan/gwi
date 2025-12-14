@@ -11,7 +11,7 @@ class SliderHandler : public QObject
     int m_currentValue;
 
 public:
-    SliderHandler(int currentValue, QObject* parent = nullptr);
+    SliderHandler(QObject* parent = nullptr);
 
 public slots:
     int getCurrentValue() const;

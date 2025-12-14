@@ -129,7 +129,6 @@ void DataManager::addSensorReading(float lux)
 
     } catch (const std::runtime_error& e) {
         qFatal("DataManager: Fatal error - %s", e.what());
- 
     }
 }
 

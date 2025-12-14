@@ -55,7 +55,6 @@ qt_add_qml_module(appgwi
         SOURCES src/RawDataModel.cpp
         SOURCES include/HardwareController.hpp
         SOURCES src/HardwareController.cpp
-        RESOURCES resources/last_led_intensity.txt
         RESOURCES resources/latest_data.yml
         SOURCES include/RunButtonlEventFilter.hpp
         SOURCES src/RunButtonlEventFilter.cpp
