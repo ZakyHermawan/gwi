@@ -4,7 +4,10 @@
 #include "DataManager.hpp"
 
 DataManager::DataManager(fkyaml::node& root)
-    : m_root{root}, m_currentIndex(0)
+    : m_root{root},
+    m_currentIndex{0},
+    m_concentrationCoefficient{1.f},
+    m_concentrationMultiplier{1.f}
 {
     for (const auto& dataNode : root["light_sensor_data"]) {
         int intensityValue = dataNode.as_int();
@@ -61,9 +64,29 @@ void DataManager::setIntensityValuesSize(int size)
     m_intensityValues.resize(size);
 }
 
-int DataManager::getIntensityValuesSize()
+int DataManager::getIntensityValuesSize() const
 {
     return m_intensityValues.size();
+}
+
+float DataManager::getConcentrationCoefficient() const
+{
+    return m_concentrationCoefficient;
+}
+
+void DataManager::setConcentrationCoefficient(float coefficient)
+{
+    m_concentrationCoefficient = coefficient;
+}
+
+float DataManager::getConcentrationMultiplier() const
+{
+    return m_concentrationMultiplier;
+}
+
+void DataManager::setConcentrationMultiplier(float multiplier)
+{
+    m_concentrationMultiplier = multiplier;
 }
 
 float DataManager::getIntensityByIndex(int index)

@@ -36,22 +36,120 @@ ColumnLayout {
 
     Rectangle {
         Layout.topMargin: 10
-        RowLayout {
-            Text {
-                text: "Maximum number of cycle: "
-                font.pointSize: 24
-                leftPadding: 30
+        ColumnLayout {
+            RowLayout {
+                Text {
+                    text: "Maximum number of cycle: "
+                    font.pointSize: 24
+                    leftPadding: 30
+                }
+
+                TextEdit {
+                    text: {
+                        if(dataManager) {
+                            return dataManager.getIntensityValuesSize()
+                        }
+                        return 30
+                    }
+
+                    font.pointSize: 24
+                    onTextChanged: dataManager.setIntensityValuesSize(text)
+                }
             }
 
-            TextEdit {
-                text: {
-                    if(dataManager) {
-                        dataManager.getIntensityValuesSize()
+            RowLayout {
+                Text {
+                    text: "Concentration: "
+                    font.pointSize: 24
+                    leftPadding: 30
+                }
+
+                TextEdit {
+                    // Coefficient
+                    text: {
+                        if (dataManager) {
+                            return dataManager.getConcentrationCoefficient()
+                        }
+                        return 1
+                    }
+
+                    font.pointSize: 24
+                    onTextChanged: {
+                        if (dataManager) {
+                            var val = parseFloat(text);
+                            if (!isNaN(val)) {
+                                dataManager.setConcentrationCoefficient(val)
+                            }
+                        }
                     }
                 }
 
-                font.pointSize: 24
-                onTextChanged: dataManager.setIntensityValuesSize(text)
+                Text {
+                    text: "x"
+                    font.pointSize: 24
+                }
+
+                ComboBox {
+                    Layout.preferredWidth: 175
+                    Layout.minimumWidth: 100
+                    font.pointSize: 14
+
+                    model: [
+                        "Tera (T)  10¹²",
+                        "Giga (G)  10⁹",
+                        "Mega (M)  10⁶",
+                        "Kilo (k)  10³",
+                        "Base Unit 10⁰",
+                        "Milli (m) 10⁻³",
+                        "Micro (μ) 10⁻⁶",
+                        "Nano (n)  10⁻⁹",
+                        "Pico (p)  10⁻¹²"
+                    ]
+
+                    property var multipliers: [
+                        1e12,  // Tera
+                        1e9,   // Giga
+                        1e6,   // Mega
+                        1000,  // Kilo
+                        1.0,   // Base
+                        0.001, // Milli
+                        1e-6,  // Micro
+                        1e-9,  // Nano
+                        1e-12  // Pico
+                    ]
+
+                    // Set default to Base
+                    currentIndex: {
+                        if (typeof dataManager !== "undefined" && dataManager) {
+                            var multiplier = dataManager.getConcentrationMultiplier()
+
+                            // Loop through all multipliers to find the matching index for the multiplier
+                            for (var i = 0; i < multipliers.length; i++) {
+                                var target = multipliers[i]
+
+                                // Floating Point Comparison Logic
+                                // We check if the difference is very small relative to the target value.
+                                // (target * 0.01) means we allow a 1% margin of error, which covers
+                                // float precision issues for both Tera (1e12) and Pico (1e-12).
+                                var diff = Math.abs(multiplier - target)
+
+                                if (diff <= (target * 0.01)) {
+                                    return i // Found the matching index!
+                                }
+                            }
+                        }
+
+                        // Fallback/Default
+                        return 4 // Return index 4 (Base 1.0) if nothing matches
+                    }
+
+                    onCurrentIndexChanged: {
+                        var multiplier = multipliers[currentIndex]
+                        if (dataManager) {
+                            dataManager.setConcentrationMultiplier(multiplier)
+                        }
+                    }
+                }
             }
         }
     }
