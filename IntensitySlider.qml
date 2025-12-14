@@ -54,7 +54,7 @@ ColumnLayout {
                     }
 
                     if(setupLayout.blockInputFromConcentrationCoefficient) {
-                        concentrationInputWarningMessage.text = "Concentration coefficient\nmust be a valid floating point number"
+                        concentrationInputWarningMessage.text = "Concentration coefficient\nmust be a valid non-zero floating point number"
                     }
                     else {
                         concentrationInputWarningMessage.text = ""
@@ -78,6 +78,7 @@ ColumnLayout {
                 TextInput {
                     id: cycleInput
                     Layout.minimumWidth: 20
+                    font.pointSize: 24
 
                     text: {
                         if(dataManager) {
@@ -85,8 +86,6 @@ ColumnLayout {
                         }
                         return "30"
                     }
-
-                    font.pointSize: 24
 
                     // PRIMARY PROTECTION: Only allow integers > 0
                     // This stops the user from typing "abc", "-", "/", or left the input as empty
@@ -142,7 +141,13 @@ ColumnLayout {
                         var strictFloatRegex = /^-?(\d+\.?\d*|\.\d+)$/;
 
                         if (strictFloatRegex.test(text)) {
-                            setupLayout.blockInputFromConcentrationCoefficient = false
+                            var val = parseFloat(text);
+                            if (val === 0) {
+                                setupLayout.blockInputFromConcentrationCoefficient = true
+                            }
+                            else {
+                                setupLayout.blockInputFromConcentrationCoefficient = false
+                            }
                         }
                         else {
                             setupLayout.blockInputFromConcentrationCoefficient = true
