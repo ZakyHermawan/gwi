@@ -5,7 +5,7 @@
 
 DataManager::DataManager(fkyaml::node& root)
     : m_root{root},
-    m_currentIndex{0},
+    m_currentIntensityValuesIndex{0},
     m_concentrationCoefficient{1.f},
     m_concentrationMultiplier{1.f}
 {
@@ -36,7 +36,7 @@ void DataManager::save_data(std::string& fileName)
     uint8_t index = 0;
     for(auto& light_sensor_data: root["light_sensor_data"])
     {
-        auto intensity = getIntensityByIndex(index);
+        auto intensity = getIntensityValueByIndex(index);
 
         // handle case when number is too small (e.g. 2e-05)
         if(std::abs(intensity) < THRESHOLD)
@@ -52,7 +52,7 @@ void DataManager::save_data(std::string& fileName)
 
 void DataManager::resetIntensityValues()
 {
-    m_currentIndex = 0;
+    m_currentIntensityValuesIndex = 0;
     for(uint8_t i = 0; i < m_intensityValues.size(); ++i)
     {
         m_intensityValues[i] = 0.0f;
@@ -79,7 +79,7 @@ void DataManager::setConcentrationMultiplier(float multiplier)
     m_concentrationMultiplier = multiplier;
 }
 
-float DataManager::getIntensityByIndex(int index)
+float DataManager::getIntensityValueByIndex(int index)
 {
     if(index < 0 || index >= getIntensityValuesSize())
     {
@@ -90,18 +90,18 @@ float DataManager::getIntensityByIndex(int index)
 
 void DataManager::updateSensorReading(float lux)
 {
-    if (m_currentIndex < 0 || m_currentIndex >= 31) {
-        throw std::runtime_error("Current index" + std::to_string(m_currentIndex) + "out of range");
+    if (m_currentIntensityValuesIndex < 0 || m_currentIntensityValuesIndex >= 31) {
+        throw std::runtime_error("Current index" + std::to_string(m_currentIntensityValuesIndex) + "out of range");
     }
     
-    // Update the value at the specified m_currentIndex
-    m_intensityValues[m_currentIndex] = lux;
+    // Update the value at the specified m_currentIntensityValuesIndex
+    m_intensityValues[m_currentIntensityValuesIndex] = lux;
     
     try {
         if (m_root.contains("light_sensor_data") && m_root["light_sensor_data"].is_sequence()) {
             auto& sequence = m_root["light_sensor_data"].get_value_ref<fkyaml::node::sequence_type&>();
-            if (m_currentIndex < static_cast<int>(sequence.size())) {
-                sequence[m_currentIndex] = lux;
+            if (m_currentIntensityValuesIndex < static_cast<int>(sequence.size())) {
+                sequence[m_currentIntensityValuesIndex] = lux;
             }
         }
     } catch (const std::exception& e) {
@@ -109,8 +109,11 @@ void DataManager::updateSensorReading(float lux)
     }
     
     /* Reached if absolutely no exception is thrown */
-    qDebug() << "DataManager: Updated m_currentIndex" << m_currentIndex << "with value" << lux << "lx";
-    emit dataUpdated(m_currentIndex, lux);
+    qDebug() << "DataManager: Updated m_currentIntensityValuesIndex"
+             << m_currentIntensityValuesIndex
+             << "with value" << lux << "lx";
+
+    emit intensityValuesUpdated(m_currentIntensityValuesIndex, lux);
     /************************************************/
 }
 
@@ -124,15 +127,15 @@ void DataManager::addSensorReading(float lux)
         * This acts as a foolproof so long as list is capped,
         * though sensor reads only until 30 (HardwareController)
         */
-        m_currentIndex = (m_currentIndex + 1) % m_intensityValues.size();
-        emit indexChanged(m_currentIndex);
+        m_currentIntensityValuesIndex = (m_currentIntensityValuesIndex + 1) % m_intensityValues.size();
+        emit currentIntensityValuesIndexChanged(m_currentIntensityValuesIndex);
 
     } catch (const std::runtime_error& e) {
         qFatal("DataManager: Fatal error - %s", e.what());
     }
 }
 
-int DataManager::getCurrentIndex() const
+int DataManager::getCurrentIntensityValuesIndex() const
 {
-    return m_currentIndex;
+    return m_currentIntensityValuesIndex;
 }

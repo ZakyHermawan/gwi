@@ -11,7 +11,7 @@ class DataManager : public QObject
 
     fkyaml::node m_root;
     QList<float> m_intensityValues;
-    int m_currentIndex;
+    int m_currentIntensityValuesIndex;
 
     float m_concentrationCoefficient;
     float m_concentrationMultiplier;
@@ -32,7 +32,7 @@ public:
     void resetIntensityValues();
 
 public slots:
-    Q_INVOKABLE float getIntensityByIndex(int index);
+    Q_INVOKABLE float getIntensityValueByIndex(int index);
     void addSensorReading(float lux);
     void setIntensityValuesSize(int size);
     Q_INVOKABLE int getIntensityValuesSize() const;
@@ -40,16 +40,14 @@ public slots:
     Q_INVOKABLE float getConcentrationMultiplier() const;
     Q_INVOKABLE void setConcentrationMultiplier(float multiplier);
 
-    // -- Get current index being updated
-    Q_INVOKABLE int getCurrentIndex() const;
+    Q_INVOKABLE int getCurrentIntensityValuesIndex() const;
 
 private slots:
     void updateSensorReading(float lux);
 
 signals:
-    // -- Signal when data at specific index is updated
-    void dataUpdated(int index, float value);
-    void indexChanged(int newIndex);
+    void intensityValuesUpdated(int index, float value);
+    void currentIntensityValuesIndexChanged(int newIndex);
     void concentrationCoefficientChanged();
     void concentrationMultiplierChanged();
 };

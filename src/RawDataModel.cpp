@@ -3,8 +3,8 @@
 RawDataModel::RawDataModel(QSharedPointer<DataManager> dataManager)
     : m_dataManager{dataManager}
 {
-    connect(m_dataManager.data(), &DataManager::dataUpdated,
-            this, &RawDataModel::onDataUpdated);
+    connect(m_dataManager.data(), &DataManager::intensityValuesUpdated,
+            this, &RawDataModel::onintensityValuesUpdated);
 }
 
 int RawDataModel::rowCount(const QModelIndex &) const
@@ -48,7 +48,7 @@ QVariant RawDataModel::data(const QModelIndex &index, int role) const
             }
 
             // intensity value
-            auto value = m_dataManager->getIntensityByIndex(index.row() - 1);
+            auto value = m_dataManager->getIntensityValueByIndex(index.row() - 1);
             return QString("%1").arg(value);
         }
 
@@ -56,7 +56,7 @@ QVariant RawDataModel::data(const QModelIndex &index, int role) const
         return index.row();
 
     case YValueRole:
-        return m_dataManager->getIntensityByIndex(index.row() - 1);
+        return m_dataManager->getIntensityValueByIndex(index.row() - 1);
 
     default:
         break;
@@ -74,7 +74,7 @@ QHash<int, QByteArray> RawDataModel::roleNames() const
     return roles;
 }
 
-void RawDataModel::onDataUpdated(int index, float value)
+void RawDataModel::onintensityValuesUpdated(int index, float value)
 {
     int tableRow = index + 1; // +1 because row 0 is the header
     
