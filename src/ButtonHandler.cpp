@@ -37,10 +37,6 @@ void ButtonHandler::handleButtonClick(const QString &buttonName)
         QApplication::quit();
 #endif
     }
-    else {
-        // Handle other menu buttons (Setup, Analysis, etc.)
-        qDebug() << "Button clicked:" << buttonName;
-    }
 }
 
 void ButtonHandler::handleRunStart()

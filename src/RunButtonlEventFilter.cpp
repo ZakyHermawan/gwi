@@ -7,7 +7,6 @@ bool RunButtonEventFilter::eventFilter(QObject *watched, QEvent *event)
 
         if (mouseEvent->button() == Qt::LeftButton) {
             is_ready = !is_ready;
-            qDebug() << is_ready;
 
             QVariant currentText = watched->property("text");
             QString newText;
