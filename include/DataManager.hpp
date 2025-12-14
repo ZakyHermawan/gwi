@@ -13,10 +13,10 @@ class DataManager : public QObject
     QList<float> m_intensityValues;
     int m_currentIntensityValuesIndex;
 
-    float m_concentrationCoefficient;
+    QString m_concentrationCoefficient;
     float m_concentrationMultiplier;
 
-    Q_PROPERTY(float concentrationCoefficient
+    Q_PROPERTY(QString concentrationCoefficient
         MEMBER m_concentrationCoefficient
         NOTIFY concentrationCoefficientChanged)
 

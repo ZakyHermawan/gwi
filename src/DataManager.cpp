@@ -6,7 +6,7 @@
 DataManager::DataManager(fkyaml::node& root)
     : m_root{root},
     m_currentIntensityValuesIndex{0},
-    m_concentrationCoefficient{1.f},
+    m_concentrationCoefficient{"1"},
     m_concentrationMultiplier{1.f}
 {
     for (const auto& dataNode : root["light_sensor_data"]) {

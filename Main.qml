@@ -11,6 +11,7 @@ Window {
     title: qsTr("PCR Graphical User Interface")
 
     property bool inputBlocked: false
+    property bool blockRun: false
     property string latestButton: "Setup"
     property string sourceFileName: "IntensitySlider.qml"
 
@@ -137,6 +138,7 @@ Window {
                     objectName: "runButton"
                     font.pixelSize: 30
                     palette.button: "red"
+                    enabled: !window.blockRun
 
                     onClicked: {
                         buttonHandler.handleButtonClick(text);

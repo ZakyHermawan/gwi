@@ -37,6 +37,37 @@ ColumnLayout {
     Rectangle {
         Layout.topMargin: 10
         ColumnLayout {
+            id: setupLayout
+            property bool blockInputFromNumberofCycle: false
+            property bool blockInputFromConcentrationCoefficient: false
+
+            function blockButtonsAndShowWarningIfNecessary() {
+                if(setupLayout.blockInputFromNumberofCycle || setupLayout.blockInputFromConcentrationCoefficient) {
+                    window.inputBlocked = true
+                    window.blockRun = true
+
+                    if(setupLayout.blockInputFromNumberofCycle) {
+                        cycleNumberInputWarningMessage.text = "Cycle number must be integer > 0"
+                    }
+                    else {
+                        cycleNumberInputWarningMessage.text = ""
+                    }
+
+                    if(setupLayout.blockInputFromConcentrationCoefficient) {
+                        concentrationInputWarningMessage.text = "Concentration coefficient\nmust be a valid floating point number"
+                    }
+                    else {
+                        concentrationInputWarningMessage.text = ""
+                    }
+                }
+                else {
+                    window.inputBlocked = false
+                    window.blockRun = false
+                    cycleNumberInputWarningMessage.text = ""
+                    concentrationInputWarningMessage.text = ""
+                }
+            }
+
             RowLayout {
                 Text {
                     text: "Maximum number of cycle: "
@@ -44,16 +75,45 @@ ColumnLayout {
                     leftPadding: 30
                 }
 
-                TextEdit {
+                TextInput {
+                    id: cycleInput
+                    Layout.minimumWidth: 20
+
                     text: {
                         if(dataManager) {
-                            return dataManager.getIntensityValuesSize()
+                            return String(dataManager.getIntensityValuesSize())
                         }
-                        return 30
+                        return "30"
                     }
 
                     font.pointSize: 24
-                    onTextChanged: dataManager.setIntensityValuesSize(text)
+
+                    // PRIMARY PROTECTION: Only allow integers > 0
+                    // This stops the user from typing "abc", "-", "/", or left the input as empty
+                    validator: IntValidator {
+                        bottom: 1
+                        top: 2147483647 // Max 32-bit int to prevent overflow
+                    }
+
+                    // SECONDARY PROTECTION: Sanitize before sending to C++
+                    onTextChanged: {
+                        // Check if input is acceptable (passes the validator)
+                        if (cycleInput.acceptableInput) {
+                            var val = parseInt(text)
+                            setupLayout.blockInputFromNumberofCycle = false
+
+                            if(dataManager) {
+                                // Update the number of cycle
+                                dataManager.setIntensityValuesSize(val)
+                            }
+                        }
+                        else {
+                            // Invalid input format
+                            setupLayout.blockInputFromNumberofCycle = true
+                        }
+
+                        setupLayout.blockButtonsAndShowWarningIfNecessary()
+                    }
                 }
             }
 
@@ -64,22 +124,39 @@ ColumnLayout {
                     leftPadding: 30
                 }
 
-                TextEdit {
+                TextInput {
                     // Coefficient
+                    Layout.minimumWidth: 20
                     text: {
                         if (dataManager) {
                             return dataManager.concentrationCoefficient
                         }
-                        return 1
+                        return "1"
                     }
 
                     font.pointSize: 24
                     onTextChanged: {
-                        if (dataManager) {
-                            var val = parseFloat(text);
-                            if (!isNaN(val)) {
-                                dataManager.concentrationCoefficient = val
-                            }
+                        // Regex: Optional minus, then either (digits + optional dot) OR (dot + digits).
+                        // Matches: "12", "12.5", "12.", ".5", "-.5"
+                        // Rejects: ".", "-", "-." (Ensures at least one digit exists)
+                        var strictFloatRegex = /^-?(\d+\.?\d*|\.\d+)$/;
+
+                        if (strictFloatRegex.test(text)) {
+                            setupLayout.blockInputFromConcentrationCoefficient = false
+                        }
+                        else {
+                            setupLayout.blockInputFromConcentrationCoefficient = true
+                        }
+
+                        setupLayout.blockButtonsAndShowWarningIfNecessary()
+
+                        // Assign the raw concentration string; sanitization is handled downstream.
+                        if(dataManager) {
+                            // text is a valid floating point literal
+                            // But we still need to sanitize in case of something like "2.", ".2", or ".0"
+                            // Make sure we handle these cases correctly.
+                            // Also consider cases like 00123.6, 0000123, or 00
+                            dataManager.concentrationCoefficient = text
                         }
                     }
                 }
@@ -118,7 +195,6 @@ ColumnLayout {
                         1e-12  // Pico
                     ]
 
-                    // Set default to Base
                     currentIndex: {
                         if (typeof dataManager !== "undefined" && dataManager) {
                             var multiplier = dataManager.getConcentrationMultiplier()
@@ -150,6 +226,28 @@ ColumnLayout {
                         }
                     }
                 }
+            }
+
+            Text {
+                id: cycleNumberInputWarningMessage
+                text: ""
+                color: "red"
+                font.pointSize: 24
+                leftPadding: 30
+
+                visible: text !== ""
+                Layout.topMargin: visible ? 10 : 0
+            }
+
+            Text {
+                id: concentrationInputWarningMessage
+                text: ""
+                color: "red"
+                font.pointSize: 24
+                leftPadding: 30
+
+                visible: text !== ""
+                Layout.topMargin: visible ? 10 : 0
             }
         }
     }
