@@ -11,7 +11,13 @@ Rectangle {
             }
 
             Text {
-                text: "0.999"
+                text: {
+                    if(dataManager) {
+                        return dataManager.rSquared.toFixed(3)
+                    }
+                    return "0.999"
+                }
+
                 font.pointSize: 24
             }
         }
@@ -24,7 +30,13 @@ Rectangle {
             }
 
             Text {
-                text: "20.318"
+                text: {
+                    if(dataManager) {
+                        return dataManager.yIntercept.toFixed(3)
+                    }
+                    return "20.318"
+                }
+
                 font.pointSize: 24
             }
         }
@@ -37,7 +49,13 @@ Rectangle {
             }
 
             Text {
-                text: "-3.258"
+                text: {
+                    if(dataManager) {
+                        return dataManager.slope.toFixed(3)
+                    }
+                    return "-3.258"
+                }
+
                 font.pointSize: 24
             }
         }
@@ -50,7 +68,13 @@ Rectangle {
             }
 
             Text {
-                text: "102.8%"
+                text: {
+                    if(dataManager) {
+                        return String(dataManager.percentEfficiency.toFixed(2)) + "%"
+                    }
+                    return "102.8%"
+                }
+
                 font.pointSize: 24
             }
         }

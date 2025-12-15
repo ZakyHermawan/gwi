@@ -13,8 +13,15 @@ class DataManager : public QObject
     QList<float> m_intensityValues;
     int m_currentIntensityValuesIndex;
 
+    // Use QString for display on setup,
+    // convert to float later for processing
     QString m_concentrationCoefficient;
     float m_concentrationMultiplier;
+
+    float m_rSquared;
+    float m_yIntercept;
+    float m_slope;
+    float m_percentEfficiency;
 
     Q_PROPERTY(QString concentrationCoefficient
         MEMBER m_concentrationCoefficient
@@ -23,6 +30,22 @@ class DataManager : public QObject
     Q_PROPERTY(float concentrationMultiplier
         MEMBER m_concentrationMultiplier
         NOTIFY concentrationMultiplierChanged)
+
+    Q_PROPERTY(float rSquared
+        MEMBER m_rSquared
+        NOTIFY rSquaredChanged)
+
+    Q_PROPERTY(float yIntercept
+        MEMBER m_yIntercept
+        NOTIFY yInterceptChanged)
+
+    Q_PROPERTY(float slope
+        MEMBER m_slope
+        NOTIFY slopeChanged)
+
+    Q_PROPERTY(float percentEfficiency
+        MEMBER m_percentEfficiency
+        NOTIFY percentEfficiencyChanged)
 
 public:
     DataManager() = default;
@@ -48,6 +71,12 @@ private slots:
 signals:
     void intensityValuesUpdated(int index, float value);
     void currentIntensityValuesIndexChanged(int newIndex);
+
     void concentrationCoefficientChanged();
     void concentrationMultiplierChanged();
+
+    void rSquaredChanged();
+    void yInterceptChanged();
+    void slopeChanged();
+    void percentEfficiencyChanged();
 };

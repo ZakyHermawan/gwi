@@ -7,7 +7,11 @@ DataManager::DataManager(fkyaml::node& root)
     : m_root{root},
     m_currentIntensityValuesIndex{0},
     m_concentrationCoefficient{"1"},
-    m_concentrationMultiplier{1.f}
+    m_concentrationMultiplier{1.f},
+    m_rSquared{0.999},
+    m_yIntercept{20.318},
+    m_slope{-3.258},
+    m_percentEfficiency{102.8}
 {
     for (const auto& dataNode : root["light_sensor_data"]) {
         int intensityValue = dataNode.as_int();
@@ -99,7 +103,7 @@ void DataManager::updateSensorReading(float lux)
     
     try {
         if (m_root.contains("light_sensor_data") && m_root["light_sensor_data"].is_sequence()) {
-            auto& sequence = m_root["light_sensor_data"].get_value_ref<fkyaml::node::sequence_type&>();
+            auto& sequence = m_root["light_sensor_data"].as_seq();
             if (m_currentIntensityValuesIndex < static_cast<int>(sequence.size())) {
                 sequence[m_currentIntensityValuesIndex] = lux;
             }
