@@ -44,7 +44,7 @@ qt_add_qml_module(appgwi
         RESOURCES resources/resources.qrc
         SOURCES src/StateManager.cpp
         SOURCES include/StateManager.hpp
-        QML_FILES IntensitySlider.qml
+        QML_FILES Setup.qml
         QML_FILES AmplificationPlot.qml
         SOURCES include/DataManager.hpp
         SOURCES src/DataManager.cpp

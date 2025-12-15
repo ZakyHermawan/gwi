@@ -13,7 +13,7 @@ Window {
     property bool inputBlocked: false
     property bool blockRun: false
     property string latestButton: "Setup"
-    property string sourceFileName: "IntensitySlider.qml"
+    property string sourceFileName: "Setup.qml"
 
     function updateButton(currentButton) {
         if(latestButton === "Setup") {
@@ -70,7 +70,7 @@ Window {
         latestButton = currentButton
 
         if(currentButton === "Setup") {
-            sourceFileName = "IntensitySlider.qml"
+            sourceFileName = "Setup.qml"
         }
         else if(currentButton === "Amplification Plot") {
             sourceFileName = "AmplificationPlot.qml"
