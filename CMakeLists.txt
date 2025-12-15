@@ -60,6 +60,8 @@ qt_add_qml_module(appgwi
         SOURCES src/RunButtonlEventFilter.cpp
         QML_FILES StandardCurve.qml
         RESOURCES resources/standardCurve.png
+        QML_FILES Analysis.qml
+        QML_FILES Summary.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

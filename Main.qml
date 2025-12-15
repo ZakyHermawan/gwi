@@ -75,13 +75,18 @@ Window {
         else if(currentButton === "Amplification Plot") {
             sourceFileName = "AmplificationPlot.qml"
         }
-        else if(currentButton === "Raw Data") {
-            sourceFileName = "RawData.qml"
+        else if(currentButton === "Analysis") {
+            sourceFileName = "Analysis.qml"
         }
         else if(currentButton === "Standard Curve") {
             sourceFileName = "StandardCurve.qml"
         }
-
+        else if(currentButton === "Raw Data") {
+            sourceFileName = "RawData.qml"
+        }
+        else if(currentButton === "Summary") {
+            sourceFileName = "Summary.qml"
+        }
         else {
             sourceFileName = ""
         }
@@ -153,26 +158,6 @@ Window {
                 Layout.alignment: Qt.AlignLeft
                 Layout.preferredHeight: 70
                 Button {
-                    id: analysisButton
-                    width: 250
-                    height: 70
-                    text: "Analysis"
-                    font.pixelSize: 30
-                    palette.button: "red"
-                    enabled: !window.inputBlocked
-
-                    onClicked: {
-                        buttonHandler.handleButtonClick(text);
-                        stateManager.changeCurrentState(text);
-                        updateButton("Analysis")
-                    }
-                }
-            }
-
-            Rectangle {
-                Layout.alignment: Qt.AlignLeft
-                Layout.preferredHeight: 70
-                Button {
                     id: amplificationPlotButton
                     width: 250
                     height: 70
@@ -185,6 +170,26 @@ Window {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
                         updateButton("Amplification Plot")
+                    }
+                }
+            }
+
+            Rectangle {
+                Layout.alignment: Qt.AlignLeft
+                Layout.preferredHeight: 70
+                Button {
+                    id: rawDataButton
+                    width: 250
+                    height: 70
+                    text: "Raw Data"
+                    font.pixelSize: 30
+                    palette.button: "red"
+                    enabled: !window.inputBlocked
+
+                    onClicked: {
+                        buttonHandler.handleButtonClick(text);
+                        stateManager.changeCurrentState(text);
+                        updateButton("Raw Data")
                     }
                 }
             }
@@ -213,10 +218,10 @@ Window {
                 Layout.alignment: Qt.AlignLeft
                 Layout.preferredHeight: 70
                 Button {
-                    id: rawDataButton
+                    id: analysisButton
                     width: 250
                     height: 70
-                    text: "Raw Data"
+                    text: "Analysis"
                     font.pixelSize: 30
                     palette.button: "red"
                     enabled: !window.inputBlocked
@@ -224,7 +229,7 @@ Window {
                     onClicked: {
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
-                        updateButton("Raw Data")
+                        updateButton("Analysis")
                     }
                 }
             }

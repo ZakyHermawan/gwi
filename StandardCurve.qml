@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+
 Rectangle {
     Image {
         source: "resources/standardCurve.png"

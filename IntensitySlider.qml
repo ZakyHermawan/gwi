@@ -36,6 +36,7 @@ ColumnLayout {
 
     Rectangle {
         Layout.topMargin: 10
+
         ColumnLayout {
             id: setupLayout
             property bool blockInputFromNumberofCycle: false
