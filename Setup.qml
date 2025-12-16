@@ -125,7 +125,7 @@ ColumnLayout {
                 }
 
                 TextInput {
-                    // Coefficient
+                    id: concentrationCoefficientInput
                     Layout.minimumWidth: 20
                     text: {
                         if (dataManager) {
@@ -173,6 +173,7 @@ ColumnLayout {
                 }
 
                 ComboBox {
+                    id: concentrationMultiplierInput
                     Layout.preferredWidth: 175
                     Layout.minimumWidth: 100
                     font.pointSize: 14
@@ -230,6 +231,29 @@ ColumnLayout {
                         if (dataManager) {
                             dataManager.setConcentrationMultiplier(multiplier)
                         }
+                    }
+                }
+            }
+
+            Button {
+                text: "Reset data"
+                font.pointSize: 24
+                Layout.leftMargin: 30
+                palette.button: "orange"
+
+                onClicked: {
+                    // Reset setup page
+                    if(sliderHandler) {
+                        mySlider.value = 0
+                        cycleInput.text = "30"
+                        concentrationCoefficientInput.text = "1"
+                        concentrationMultiplierInput.currentIndex = 4
+                    }
+
+                    // Reset data manager's members
+                    if(dataManager) {
+                        dataManager.resetIntensityValues()
+                        dataManager.resetStandardCurveData()
                     }
                 }
             }

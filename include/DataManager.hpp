@@ -18,6 +18,7 @@ class DataManager : public QObject
     QString m_concentrationCoefficient;
     float m_concentrationMultiplier;
 
+    // Standard curve data
     float m_rSquared;
     float m_yIntercept;
     float m_slope;
@@ -57,9 +58,11 @@ public:
     DataManager(fkyaml::node& root);
     QList<float>& getIntensityValuesList();
     void save_data(std::string& fileName);
-    void resetIntensityValues();
 
 public slots:
+    void resetIntensityValues();
+    void resetStandardCurveData();
+
     Q_INVOKABLE float getIntensityValueByIndex(int index);
     void addSensorReading(float lux);
     void setIntensityValuesSize(int size);

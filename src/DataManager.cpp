@@ -64,6 +64,15 @@ void DataManager::resetIntensityValues()
     }
 }
 
+void DataManager::resetStandardCurveData()
+{
+    m_rSquared = 0.0f;
+    m_yIntercept = 0.0f;
+    m_slope = 0.0f;
+    m_percentEfficiency = 0.0f;
+    m_summary = "";
+}
+
 void DataManager::setIntensityValuesSize(int size)
 {
     m_intensityValues.resize(size);
