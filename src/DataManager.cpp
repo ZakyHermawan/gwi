@@ -63,9 +63,99 @@ void DataManager::save_data(std::string& fileName)
     ofs << root;
 }
 
+std::tuple<double, double, double>
+DataManager::simpleLinearRegression(const std::vector<double>& x, const std::vector<double>& y) {
+    if (x.size() != y.size() || x.empty()) return {0.0, 0.0, 0.0};
+
+    size_t n = x.size();
+    if (n < 2) return {0.0, 0.0, 0.0}; // Need at least 2 points
+
+    // Compute Means (Averages)
+    // This centers the data, keeping numbers smaller to avoid overflow.
+    double sum_x = 0.0;
+    double sum_y = 0.0;
+    for (size_t i = 0; i < n; ++i) {
+        sum_x += x[i];
+        sum_y += y[i];
+    }
+    double mean_x = sum_x / n;
+    double mean_y = sum_y / n;
+
+    // Compute Variance & Covariance
+    // We sum the differences from the mean, rather than raw squares.
+    // This prevents Catastrophic Cancellation.
+    double ss_xx = 0.0; // Sum of squares (x - mean_x)
+    double ss_yy = 0.0; // Sum of squares (y - mean_y)
+    double ss_xy = 0.0; // Sum of products (x - mean_x)*(y - mean_y)
+
+    for (size_t i = 0; i < n; ++i) {
+        double dx = x[i] - mean_x;
+        double dy = y[i] - mean_y;
+
+        ss_xx += dx * dx;
+        ss_yy += dy * dy;
+        ss_xy += dx * dy;
+    }
+
+    // If ss_xx is 0, all X values are identical (vertical line).
+    if (std::abs(ss_xx) < 1e-9) return {0.0, 0.0, 0.0};
+
+    double slope = ss_xy / ss_xx;
+    double intercept = mean_y - slope * mean_x;
+
+    // R^2 = (Covariance / (StdDev_X * StdDev_Y))^2
+    double r_squared = 0.0;
+    if (ss_yy > 1e-9) {
+        // Mathematically equivalent to: (ss_xy * ss_xy) / (ss_xx * ss_yy)
+        // Calculated this way to preserve sign/precision logic
+        double r = ss_xy / std::sqrt(ss_xx * ss_yy);
+        r_squared = r * r;
+    }
+
+    return {slope, intercept, r_squared};
+}
+
+double DataManager::calculatePCREfficiency(double slope) {
+    // Prevent division by zero
+    // A slope of 0 means Ct never changes regardless of dilution (impossible/bad data).
+    if (std::abs(slope) < 1e-9) {
+        return std::numeric_limits<double>::infinity();
+    }
+
+    double exponent = -1.0 / slope;
+
+    // std::pow(10, x) will overflow 'double' if x > ~308.
+    // This happens if the slope is extremely small (e.g., -0.000001).
+    if (exponent > 308.0) {
+        return std::numeric_limits<double>::infinity();
+    }
+
+    // Calculate Efficiency
+    // Subtract 1 to get the efficiency fraction, multiply by 100 for percentage.
+    return (std::pow(10.0, exponent) - 1.0) * 100.0;
+}
+
 void DataManager::calculateStandardCurve()
 {
+    if(m_xyLogStandardCurve.size() < 5) {
+        m_summary = "You need at least 5 dilution points.";
+        return;
+    }
 
+    std::vector<double> x, y;
+    for(int i=0; i<m_xyLogStandardCurve.size(); ++i)
+    {
+        x.push_back(m_xyLogStandardCurve[i].first);
+        y.push_back(m_xyLogStandardCurve[i].second);
+    }
+
+    auto [slope, intercept, r_squared] = simpleLinearRegression(x, y);
+    double efficiency = calculatePCREfficiency(slope);
+
+    m_slope = slope;
+    m_yIntercept = intercept;
+    m_rSquared = r_squared;
+    m_percentEfficiency = efficiency;
 }
 
 void DataManager::resetIntensityValues()
@@ -84,6 +174,8 @@ void DataManager::resetStandardCurveData()
     m_slope = 0.0f;
     m_percentEfficiency = 0.0f;
     m_summary = "";
+    m_xyLogStandardCurve.clear();
+    calculateStandardCurve();
 }
 
 void DataManager::setIntensityValuesSize(int size)
