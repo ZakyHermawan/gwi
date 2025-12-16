@@ -2,7 +2,13 @@ import QtQuick
 
 Item {
     Text {
-        text: "The resulting data is reliable for quantification"
+        text: {
+            if(dataManager) {
+                return dataManager.summary
+            }
+            return ""
+        }
+
         font.pointSize: 24
         leftPadding: 30
     }

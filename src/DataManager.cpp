@@ -11,7 +11,8 @@ DataManager::DataManager(fkyaml::node& root)
     m_rSquared{0.999},
     m_yIntercept{20.318},
     m_slope{-3.258},
-    m_percentEfficiency{102.8}
+    m_percentEfficiency{102.8},
+    m_summary{"The resulting data is reliable for quantification."}
 {
     for (const auto& dataNode : root["light_sensor_data"]) {
         int intensityValue = dataNode.as_int();

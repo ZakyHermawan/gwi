@@ -15,7 +15,7 @@ Rectangle {
                     if(dataManager) {
                         return dataManager.rSquared.toFixed(3)
                     }
-                    return "0.999"
+                    return ""
                 }
 
                 font.pointSize: 24
@@ -34,7 +34,7 @@ Rectangle {
                     if(dataManager) {
                         return dataManager.yIntercept.toFixed(3)
                     }
-                    return "20.318"
+                    return ""
                 }
 
                 font.pointSize: 24
@@ -53,7 +53,7 @@ Rectangle {
                     if(dataManager) {
                         return dataManager.slope.toFixed(3)
                     }
-                    return "-3.258"
+                    return ""
                 }
 
                 font.pointSize: 24
@@ -72,7 +72,7 @@ Rectangle {
                     if(dataManager) {
                         return String(dataManager.percentEfficiency.toFixed(2)) + "%"
                     }
-                    return "102.8%"
+                    return ""
                 }
 
                 font.pointSize: 24

@@ -22,6 +22,7 @@ class DataManager : public QObject
     float m_yIntercept;
     float m_slope;
     float m_percentEfficiency;
+    QString m_summary;
 
     Q_PROPERTY(QString concentrationCoefficient
         MEMBER m_concentrationCoefficient
@@ -46,6 +47,10 @@ class DataManager : public QObject
     Q_PROPERTY(float percentEfficiency
         MEMBER m_percentEfficiency
         NOTIFY percentEfficiencyChanged)
+
+    Q_PROPERTY(QString summary
+        MEMBER m_summary
+        NOTIFY summaryChanged)
 
 public:
     DataManager() = default;
@@ -79,4 +84,5 @@ signals:
     void yInterceptChanged();
     void slopeChanged();
     void percentEfficiencyChanged();
+    void summaryChanged();
 };
