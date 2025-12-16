@@ -4,6 +4,7 @@
 
 #include <QObject>
 #include <QList>
+#include <QPair>
 
 class DataManager : public QObject
 {
@@ -24,6 +25,7 @@ class DataManager : public QObject
     float m_slope;
     float m_percentEfficiency;
     QString m_summary;
+    QList<QPair<float, int>> m_xyLogStandardCurve;
 
     Q_PROPERTY(QString concentrationCoefficient
         MEMBER m_concentrationCoefficient
@@ -60,6 +62,8 @@ public:
     void save_data(std::string& fileName);
 
 public slots:
+    void calculateStandardCurve();
+
     void resetIntensityValues();
     void resetStandardCurveData();
 

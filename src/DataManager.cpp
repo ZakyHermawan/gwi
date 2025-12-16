@@ -23,6 +23,14 @@ DataManager::DataManager(fkyaml::node& root)
 
         m_intensityValues.append(intensityValue);
     }
+
+    // Dummy standard curve data
+    m_xyLogStandardCurve.append(qMakePair(0.7, 18));
+    m_xyLogStandardCurve.append(qMakePair(-0.3, 22));
+    m_xyLogStandardCurve.append(qMakePair(-1.3, 25));
+    m_xyLogStandardCurve.append(qMakePair(-2.3, 28));
+    m_xyLogStandardCurve.append(qMakePair(-3.3, 31));
+    m_xyLogStandardCurve.append(qMakePair(-4.3, 34));
 }
 
 QList<float>& DataManager::getIntensityValuesList()
@@ -53,6 +61,11 @@ void DataManager::save_data(std::string& fileName)
         ++index;
     }
     ofs << root;
+}
+
+void DataManager::calculateStandardCurve()
+{
+
 }
 
 void DataManager::resetIntensityValues()

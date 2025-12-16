@@ -146,6 +146,16 @@ Window {
                     enabled: !window.blockRun
 
                     onClicked: {
+                        // Event filter (in RunButtonEventFilter.cpp)
+                        // being executed before onClicked.
+                        // Therefore, the value of runButton.text is changed already
+
+                        if(dataManager && text === "Run") {
+                            // If the current text is "Run", it means that
+                            // the text before this button were clicked is "Stop"
+                            dataManager.calculateStandardCurve()
+                        }
+
                         buttonHandler.handleButtonClick(text);
                         stateManager.changeCurrentState(text);
                         window.inputBlocked = !window.inputBlocked;
