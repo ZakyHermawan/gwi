@@ -59,6 +59,8 @@ public:
     DataManager() = default;
     DataManager(fkyaml::node& root);
     QList<float>& getIntensityValuesList();
+    QList<QPair<double, int>>& getXyLogStandardCurve();
+
     void save_data(std::string& fileName);
 
     /*
@@ -133,6 +135,7 @@ public slots:
     void addSensorReading(float lux);
     void setIntensityValuesSize(int size);
     Q_INVOKABLE int getIntensityValuesSize() const;
+    Q_INVOKABLE int getStandardCurveDataSize() const;
 
     Q_INVOKABLE float getConcentrationMultiplier() const;
     Q_INVOKABLE void setConcentrationMultiplier(float multiplier);
@@ -144,6 +147,7 @@ private slots:
 
 signals:
     void intensityValuesUpdated(int index, float value);
+    void xyLogStandardCurveUpdated(int index, float value);
     void currentIntensityValuesIndexChanged(int newIndex);
 
     void concentrationCoefficientChanged();

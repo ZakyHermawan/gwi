@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Basic
+import QtQuick.VirtualKeyboard
 
 Window {
     id: window
@@ -326,6 +327,5 @@ Window {
                 }
             }
         }
-
     }
 }

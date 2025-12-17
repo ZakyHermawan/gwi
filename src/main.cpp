@@ -4,6 +4,7 @@
 #include "SliderHandler.hpp"
 #include "HardwareController.hpp"
 #include "RawDataModel.hpp"
+#include "StandardCurveModel.hpp"
 #include "RunButtonlEventFilter.hpp"
 
 #include "fkYAML.hpp"
@@ -40,6 +41,7 @@ static void close_files(Args... files) {
 
 int main(int argc, char *argv[])
 {
+    qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
     QApplication app(argc, argv);
     QQmlApplicationEngine engine;
 
@@ -64,6 +66,7 @@ int main(int argc, char *argv[])
     StateManager stateManager;
     QSharedPointer<DataManager> dataManager(new DataManager(node));
     RawDataModel rawDataModel(dataManager);
+    StandardCurveModel standardCurveModel(dataManager);
 
     // HardwareController hardwareController(0x23, 1, 18, &app);
     QSharedPointer<HardwareController> hardwareController(new HardwareController(0x23, 1, 18, &app));
@@ -86,6 +89,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dataManager", dataManager.data());
 
     engine.rootContext()->setContextProperty("rawDataModel", &rawDataModel);
+    engine.rootContext()->setContextProperty("standardCurveModel", &standardCurveModel);
     engine.load(mainQmlPath);
 
     // install run button event filter

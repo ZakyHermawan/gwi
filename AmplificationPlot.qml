@@ -5,7 +5,6 @@ import QtQuick.Controls.Basic
 import QtCharts
 
 ColumnLayout {
-
     Rectangle {
         height: 100
         color: "red"

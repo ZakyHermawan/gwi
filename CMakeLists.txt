@@ -4,7 +4,7 @@ project(gwi VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Charts)
+find_package(Qt6 REQUIRED COMPONENTS Quick Charts VirtualKeyboard)
 
 # Detect if building on a RPi
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm" OR CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
@@ -62,6 +62,8 @@ qt_add_qml_module(appgwi
         RESOURCES resources/standardCurve.png
         QML_FILES Analysis.qml
         QML_FILES Summary.qml
+        SOURCES include/StandardCurveModel.hpp
+        SOURCES src/StandardCurveModel.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -75,13 +77,12 @@ set_target_properties(appgwi PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_include_directories(appgwi PRIVATE
-    include
-)
+target_include_directories(appgwi PRIVATE include)
 
 target_link_libraries(appgwi PUBLIC
     Qt6::Quick
     Qt6::Charts
+    Qt6::VirtualKeyboard
 )
 
 if(IS_RASPBERRY_PI)

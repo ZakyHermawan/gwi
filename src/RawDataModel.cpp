@@ -4,7 +4,7 @@ RawDataModel::RawDataModel(QSharedPointer<DataManager> dataManager)
     : m_dataManager{dataManager}
 {
     connect(m_dataManager.data(), &DataManager::intensityValuesUpdated,
-            this, &RawDataModel::onintensityValuesUpdated);
+            this, &RawDataModel::onIntensityValuesUpdated);
 }
 
 int RawDataModel::rowCount(const QModelIndex &) const
@@ -74,7 +74,7 @@ QHash<int, QByteArray> RawDataModel::roleNames() const
     return roles;
 }
 
-void RawDataModel::onintensityValuesUpdated(int index, float value)
+void RawDataModel::onIntensityValuesUpdated(int index, float value)
 {
     int tableRow = index + 1; // +1 because row 0 is the header
     

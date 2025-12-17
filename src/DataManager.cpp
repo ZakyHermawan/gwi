@@ -31,6 +31,8 @@ DataManager::DataManager(fkyaml::node& root)
     m_xyLogStandardCurve.append(qMakePair(-2.3, 28));
     m_xyLogStandardCurve.append(qMakePair(-3.3, 31));
     m_xyLogStandardCurve.append(qMakePair(-4.3, 34));
+
+    calculateStandardCurve();
 }
 
 QList<float>& DataManager::getIntensityValuesList()
@@ -183,9 +185,19 @@ void DataManager::setIntensityValuesSize(int size)
     m_intensityValues.resize(size);
 }
 
+QList<QPair<double, int>>& DataManager::getXyLogStandardCurve()
+{
+    return m_xyLogStandardCurve;
+}
+
 int DataManager::getIntensityValuesSize() const
 {
     return m_intensityValues.size();
+}
+
+int DataManager::getStandardCurveDataSize() const
+{
+    return m_xyLogStandardCurve.size();
 }
 
 float DataManager::getConcentrationMultiplier() const

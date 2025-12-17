@@ -1,25 +1,25 @@
 import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls.Basic
+import QtQuick.VirtualKeyboard
 
 ColumnLayout {
     property int sliderValue:  0
+
     Slider {
         id: mySlider
         value: {
-            if(sliderHandler) {
+            if(typeof sliderHandler !== "undefined" && sliderHandler) {
                 // slider value is a real number from 0 to 1
                 return sliderHandler.getCurrentValue() / 100
-            }
-            else
-            {
+            } else {
                 return 0
             }
         }
 
         onValueChanged: {
             sliderValue = parseInt(value * 100)
-            if(sliderHandler) {
+            if(typeof sliderHandler !== "undefined" && sliderHandler) {
                 sliderHandler.changeSliderValue(sliderValue)
             }
         }
@@ -36,6 +36,7 @@ ColumnLayout {
 
     Rectangle {
         Layout.topMargin: 10
+        Layout.fillWidth: true
 
         ColumnLayout {
             id: setupLayout
@@ -49,19 +50,16 @@ ColumnLayout {
 
                     if(setupLayout.blockInputFromNumberofCycle) {
                         cycleNumberInputWarningMessage.text = "Cycle number must be integer > 0"
-                    }
-                    else {
+                    } else {
                         cycleNumberInputWarningMessage.text = ""
                     }
 
                     if(setupLayout.blockInputFromConcentrationCoefficient) {
                         concentrationInputWarningMessage.text = "Concentration coefficient\nmust be a valid non-zero floating point number"
-                    }
-                    else {
+                    } else {
                         concentrationInputWarningMessage.text = ""
                     }
-                }
-                else {
+                } else {
                     window.inputBlocked = false
                     window.blockRun = false
                     cycleNumberInputWarningMessage.text = ""
@@ -80,38 +78,33 @@ ColumnLayout {
                     id: cycleInput
                     Layout.minimumWidth: 20
                     font.pointSize: 24
-
                     text: {
-                        if(dataManager) {
+                        if(typeof dataManager !== "undefined" && dataManager) {
                             return String(dataManager.getIntensityValuesSize())
                         }
                         return "30"
                     }
 
-                    // PRIMARY PROTECTION: Only allow integers > 0
-                    // This stops the user from typing "abc", "-", "/", or left the input as empty
-                    validator: IntValidator {
-                        bottom: 1
-                        top: 2147483647 // Max 32-bit int to prevent overflow
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    onEditingFinished: {
+                        focus = false
                     }
 
-                    // SECONDARY PROTECTION: Sanitize before sending to C++
+                    validator: IntValidator {
+                        bottom: 1
+                        top: 2147483647
+                    }
+
                     onTextChanged: {
-                        // Check if input is acceptable (passes the validator)
                         if (cycleInput.acceptableInput) {
                             var val = parseInt(text)
                             setupLayout.blockInputFromNumberofCycle = false
-
-                            if(dataManager) {
-                                // Update the number of cycle
+                            if(typeof dataManager !== "undefined" && dataManager) {
                                 dataManager.setIntensityValuesSize(val)
                             }
-                        }
-                        else {
-                            // Invalid input format
+                        } else {
                             setupLayout.blockInputFromNumberofCycle = true
                         }
-
                         setupLayout.blockButtonsAndShowWarningIfNecessary()
                     }
                 }
@@ -127,41 +120,34 @@ ColumnLayout {
                 TextInput {
                     id: concentrationCoefficientInput
                     Layout.minimumWidth: 20
+                    font.pointSize: 24
                     text: {
-                        if (dataManager) {
+                        if(typeof dataManager !== "undefined" && dataManager) {
                             return dataManager.concentrationCoefficient
                         }
                         return "1"
                     }
-
-                    font.pointSize: 24
+                    inputMethodHints: Qt.ImhDigitsOnly
+                    onEditingFinished: {
+                        focus = false
+                    }
                     onTextChanged: {
-                        // Regex: Optional minus, then either (digits + optional dot) OR (dot + digits).
-                        // Matches: "12", "12.5", "12.", ".5", "-.5"
-                        // Rejects: ".", "-", "-." (Ensures at least one digit exists)
                         var strictFloatRegex = /^-?(\d+\.?\d*|\.\d+)$/;
 
                         if (strictFloatRegex.test(text)) {
                             var val = parseFloat(text);
                             if (val === 0) {
                                 setupLayout.blockInputFromConcentrationCoefficient = true
-                            }
-                            else {
+                            } else {
                                 setupLayout.blockInputFromConcentrationCoefficient = false
                             }
-                        }
-                        else {
+                        } else {
                             setupLayout.blockInputFromConcentrationCoefficient = true
                         }
 
                         setupLayout.blockButtonsAndShowWarningIfNecessary()
 
-                        // Assign the raw concentration string; sanitization is handled downstream.
-                        if(dataManager) {
-                            // text is a valid floating point literal
-                            // But we still need to sanitize in case of something like "2.", ".2", or ".0"
-                            // Make sure we handle these cases correctly.
-                            // Also consider cases like 00123.6, 0000123, or 00
+                        if(typeof dataManager !== "undefined" && dataManager) {
                             dataManager.concentrationCoefficient = text
                         }
                     }
@@ -205,30 +191,20 @@ ColumnLayout {
                     currentIndex: {
                         if (typeof dataManager !== "undefined" && dataManager) {
                             var multiplier = dataManager.getConcentrationMultiplier()
-
-                            // Loop through all multipliers to find the matching index for the multiplier
                             for (var i = 0; i < multipliers.length; i++) {
                                 var target = multipliers[i]
-
-                                // Floating Point Comparison Logic
-                                // We check if the difference is very small relative to the target value.
-                                // (target * 0.01) means we allow a 1% margin of error, which covers
-                                // float precision issues for both Tera (1e12) and Pico (1e-12).
                                 var diff = Math.abs(multiplier - target)
-
                                 if (diff <= (target * 0.01)) {
-                                    return i // Found the matching index!
+                                    return i
                                 }
                             }
                         }
-
-                        // Fallback/Default
-                        return 4 // Return index 4 (Base 1.0) if nothing matches
+                        return 4
                     }
 
                     onCurrentIndexChanged: {
                         var multiplier = multipliers[currentIndex]
-                        if (dataManager) {
+                        if (typeof dataManager !== "undefined" && dataManager) {
                             dataManager.setConcentrationMultiplier(multiplier)
                         }
                     }
@@ -242,16 +218,13 @@ ColumnLayout {
                 palette.button: "orange"
 
                 onClicked: {
-                    // Reset setup page
-                    if(sliderHandler) {
+                    if(typeof sliderHandler !== "undefined" && sliderHandler) {
                         mySlider.value = 0
                         cycleInput.text = "30"
                         concentrationCoefficientInput.text = "1"
                         concentrationMultiplierInput.currentIndex = 4
                     }
-
-                    // Reset data manager's members
-                    if(dataManager) {
+                    if(typeof dataManager !== "undefined" && dataManager) {
                         dataManager.resetIntensityValues()
                         dataManager.resetStandardCurveData()
                     }
@@ -264,7 +237,6 @@ ColumnLayout {
                 color: "red"
                 font.pointSize: 24
                 leftPadding: 30
-
                 visible: text !== ""
                 Layout.topMargin: visible ? 10 : 0
             }
@@ -275,9 +247,47 @@ ColumnLayout {
                 color: "red"
                 font.pointSize: 24
                 leftPadding: 30
-
                 visible: text !== ""
                 Layout.topMargin: visible ? 10 : 0
+            }
+
+            InputPanel {
+                id: inputPanel
+                z: 99
+
+                // Inherit directly from root/main window, so the keyboard is overlays the whole screen
+                parent: window.contentItem
+
+                // Anchor to the window edges
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                // Initial position (hidden below screen)
+                y: window.height
+
+                states: State {
+                    name: "visible"
+                    when: inputPanel.active
+                    PropertyChanges {
+                        target: inputPanel
+                        // Position at the bottom of the window
+                        // Give some offset, so it does not cover the concentration coefficient input
+                        y: window.height - inputPanel.height + 10
+                    }
+                }
+
+                transitions: Transition {
+                    from: ""
+                    to: "visible"
+                    reversible: true
+                    ParallelAnimation {
+                        NumberAnimation {
+                            properties: "y"
+                            duration: 250
+                            easing.type: Easing.InOutQuad
+                        }
+                    }
+                }
             }
         }
     }
