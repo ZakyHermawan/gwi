@@ -9,7 +9,7 @@ RawDataModel::RawDataModel(QSharedPointer<DataManager> dataManager)
 
 int RawDataModel::rowCount(const QModelIndex &) const
 {
-    return 32;
+    return m_dataManager->getIntensityValuesSize() + 1;
 }
 
 int RawDataModel::columnCount(const QModelIndex &) const

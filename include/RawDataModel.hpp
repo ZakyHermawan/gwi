@@ -26,10 +26,10 @@ public:
 
     RawDataModel(QSharedPointer<DataManager> dataManager);
 
-    // 32 rows, 1 for the column name, 31 for cycle 0 until 31
+    // first row is for the labels
     int rowCount(const QModelIndex & = QModelIndex()) const override;
 
-    // 2 columns, for cycle number and intensity vaues
+    // 2 columns, one for cycle number and one for intensity vaues
     int columnCount(const QModelIndex & = QModelIndex()) const override;
 
     // Returns the data stored under the given role for the item referred to by the index.

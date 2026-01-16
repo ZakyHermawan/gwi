@@ -4,34 +4,93 @@ import QtQuick.Controls.Basic
 import QtQuick.VirtualKeyboard
 
 ColumnLayout {
-    property int sliderValue:  0
+    property int sliderValue:  (dataManager && typeof dataManager !== "undefined")
+                               ? dataManager.ledIntensity
+                               : 0
 
-    Slider {
-        id: mySlider
-        value: {
-            if(typeof sliderHandler !== "undefined" && sliderHandler) {
-                // slider value is a real number from 0 to 1
-                return sliderHandler.getCurrentValue() / 100
-            } else {
-                return 0
+    RowLayout {
+        Slider {
+            id: mySlider
+
+            // Layout properties
+            implicitWidth: 300
+            implicitHeight: 50
+            leftPadding: 30
+
+            // Keep the binding (C++ -> UI)
+            // Map the 0-100 integer from C++ to 0.0-1.0 range for the Slider
+            value: (dataManager && typeof dataManager !== "undefined")
+                   ? dataManager.ledIntensity / 100
+                   : 0
+
+            // FAST UPDATE: Update only the value while dragging
+            // This keeps the UI responsive without lagging the thread.
+            onMoved: {
+                var newVal = Math.round(value * 100)
+
+                if (dataManager && typeof dataManager !== "undefined") {
+                    // Only update C++ if the integer value actually changed
+                    if (dataManager.ledIntensity !== newVal) {
+                        dataManager.ledIntensity = newVal
+                    }
+                }
+            }
+
+            // HEAVY UPDATE: Commit changes when the user releases the handle
+            onPressedChanged: {
+                // 'pressed' becomes false when the user lets go
+                if (!pressed && dataManager && typeof dataManager !== "undefined") {
+                    dataManager.updateCurrentExperiment()
+                    dataManager.loadCurrentExperiment()
+                }
             }
         }
 
-        onValueChanged: {
-            sliderValue = parseInt(value * 100)
-            if(typeof sliderHandler !== "undefined" && sliderHandler) {
-                sliderHandler.changeSliderValue(sliderValue)
+        Text {
+            text: "Intensity Threshold: "
+            font.pointSize: 24
+            leftPadding: 30
+        }
+
+        TextField {
+            id: intensityThreshold
+            Layout.minimumWidth: 20
+            font.pointSize: 24
+            background: Rectangle { color: "gray" }
+
+            text: {
+                if(typeof dataManager !== "undefined" && dataManager) {
+                    return dataManager.intensityThreshold
+                }
+                return "0"
+            }
+
+            onEditingFinished: {
+                focus = false
+            }
+            inputMethodHints: Qt.ImhDigitsOnly
+            validator: DoubleValidator {
+                bottom: 0.00
+                decimals: 3
+                notation: DoubleValidator.StandardNotation
+            }
+            onTextChanged: {
+                var val = parseFloat(text)
+
+                // Make sure val is not NaN
+                if(typeof dataManager !== "undefined" && dataManager && (val || val === 0)) {
+                    dataManager.intensityThreshold = val
+                }
             }
         }
-        implicitWidth: 300
-        implicitHeight: 50
-        leftPadding: 30
     }
 
-    Text {
-        text: "Light Intensity Level: " + sliderValue + " %"
-        font.pointSize: 24
-        leftPadding: 30
+    RowLayout {
+        Text {
+            text: "Light Intensity Level: " + sliderValue + " %"
+            font.pointSize: 24
+            leftPadding: 30
+        }
     }
 
     Rectangle {
@@ -69,15 +128,18 @@ ColumnLayout {
 
             RowLayout {
                 Text {
-                    text: "Maximum number of cycle: "
+                    text: "Max Cycle: "
                     font.pointSize: 24
                     leftPadding: 30
                 }
 
-                TextInput {
+                TextField {
                     id: cycleInput
                     Layout.minimumWidth: 20
+                    Layout.maximumWidth: 75
                     font.pointSize: 24
+                    background: Rectangle { color: "gray" }
+
                     text: {
                         if(typeof dataManager !== "undefined" && dataManager) {
                             return String(dataManager.getIntensityValuesSize())
@@ -92,7 +154,7 @@ ColumnLayout {
 
                     validator: IntValidator {
                         bottom: 1
-                        top: 2147483647
+                        top: 999
                     }
 
                     onTextChanged: {
@@ -100,7 +162,9 @@ ColumnLayout {
                             var val = parseInt(text)
                             setupLayout.blockInputFromNumberofCycle = false
                             if(typeof dataManager !== "undefined" && dataManager) {
-                                dataManager.setIntensityValuesSize(val)
+                                dataManager.setMaxCycle(val)
+                                dataManager.updateCurrentExperiment()
+                                dataManager.loadCurrentExperiment()
                             }
                         } else {
                             setupLayout.blockInputFromNumberofCycle = true
@@ -117,9 +181,18 @@ ColumnLayout {
                     leftPadding: 30
                 }
 
-                TextInput {
+                TextField {
                     id: concentrationCoefficientInput
-                    Layout.minimumWidth: 20
+                    background: Rectangle { color: "gray" }
+                    Layout.minimumWidth: 120
+                    Layout.preferredWidth: Math.max(
+                            Layout.minimumWidth,
+                            metrics.advanceWidth(text) + leftPadding + rightPadding + 20
+                        )
+                    FontMetrics {
+                            id: metrics
+                            font: concentrationCoefficientInput.font
+                        }
                     font.pointSize: 24
                     text: {
                         if(typeof dataManager !== "undefined" && dataManager) {
@@ -162,7 +235,12 @@ ColumnLayout {
                     id: concentrationMultiplierInput
                     Layout.preferredWidth: 175
                     Layout.minimumWidth: 100
+                    Layout.minimumHeight: 55
                     font.pointSize: 14
+                    background: Rectangle {
+                        color: "gray"
+                        height: parent.height
+                    }
 
                     model: [
                         "Tera (T)  10¹²",
@@ -225,8 +303,7 @@ ColumnLayout {
                         concentrationMultiplierInput.currentIndex = 4
                     }
                     if(typeof dataManager !== "undefined" && dataManager) {
-                        dataManager.resetIntensityValues()
-                        dataManager.resetStandardCurveData()
+                        dataManager.resetCurrentExperiment()
                     }
                 }
             }

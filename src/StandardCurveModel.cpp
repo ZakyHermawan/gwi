@@ -4,7 +4,7 @@ StandardCurveModel::StandardCurveModel(QSharedPointer<DataManager> dataManager)
     : m_dataManager{dataManager}
 {
     connect(m_dataManager.data(), &DataManager::xyLogStandardCurveUpdated,
-            this, &StandardCurveModel::onStandardCurveUpdated);
+            this, &StandardCurveModel::refreshModel);
 }
 
 int StandardCurveModel::rowCount(const QModelIndex &) const
@@ -66,7 +66,8 @@ void StandardCurveModel::onStandardCurveUpdated(int index, float value)
     int currentSize = m_dataManager->getXyLogStandardCurve().size();
 
     // If the index matches the last element, we assume it's an append
-    if (index == currentSize - 1) {
+    if (index == currentSize - 1)
+    {
         // We must tell the view we are adding a row.
         // Even if DataManager already has the data, we strictly wrap the notification
         // so the View updates its internal mapping.
@@ -75,7 +76,8 @@ void StandardCurveModel::onStandardCurveUpdated(int index, float value)
         beginInsertRows(QModelIndex(), index, index);
         endInsertRows();
     }
-    else {
+    else
+    {
         // It is an update to an existing point
         QModelIndex startIndex = createIndex(index, 0); // Column 0 (X)
         QModelIndex endIndex = createIndex(index, 1);   // Column 1 (Y)
@@ -83,4 +85,10 @@ void StandardCurveModel::onStandardCurveUpdated(int index, float value)
         // Notify that both columns changed
         emit dataChanged(startIndex, endIndex, {Qt::DisplayRole});
     }
+}
+
+void StandardCurveModel::refreshModel()
+{
+    beginResetModel();
+    endResetModel();
 }

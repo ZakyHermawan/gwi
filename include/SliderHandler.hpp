@@ -2,6 +2,9 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QSharedPointer>
+
+#include "DataManager.hpp"
 
 class SliderHandler : public QObject
 {
@@ -9,12 +12,14 @@ class SliderHandler : public QObject
 
     QTimer* m_updateTimer;
     int m_currentValue;
+    QSharedPointer<DataManager> m_dataManager;
 
 public:
-    SliderHandler(QObject* parent = nullptr);
+    SliderHandler(QSharedPointer<DataManager> dataManager, QObject* parent = nullptr);
+    void setInitialSliderValue(int value);
 
 public slots:
-    int getCurrentValue() const;
+    int getCurrentValue();
     void changeSliderValue(int currValue);
     void onUpdateTimer();
 

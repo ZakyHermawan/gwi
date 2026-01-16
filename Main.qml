@@ -269,21 +269,98 @@ Window {
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
+            Layout.topMargin: 10
 
             Rectangle {
                 Layout.alignment: Qt.AlignLeft
-                Layout.preferredWidth: 250
                 Layout.preferredHeight: 80
 
-                Text {
-                    text: "Experiment"
-                    font.pixelSize: 30
-                    fontSizeMode: Text.Fit
-                    minimumPixelSize: 10
-                    leftPadding: 30
-                    topPadding: 20
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
+                // Ensure the main wrapper expands to fit both the ComboBox AND the new wide button
+                Layout.preferredWidth: contentRow.width
+                color: "transparent"
+
+                Row {
+                    id: contentRow
+                    spacing: 10
+
+                    ComboBox {
+                        id: myComboBox
+                        height: 50
+                        font.pixelSize: 30
+                        implicitWidth: 350
+
+                        model: experimentModel
+                        editable: true
+                        textRole: "experimentName"
+
+                        onActivated: (index) => {
+                            if (index >= 0) {
+                                experimentModel.loadExperiment(index)
+                            }
+                        }
+
+                        onAccepted: {
+                            focus = false // Remove focus to hide keyboard/cursor
+
+                            // Make sure the file name as .yml extension
+                            var cleanText = editText.trim()
+                            if (cleanText === "") return
+                            if (!cleanText.endsWith(".yml")) {
+                                cleanText += ".yml"
+                            }
+                            experimentModel.addEntry(cleanText)
+                        }
+
+                        Component.onCompleted: {
+                            if (count > 0) {
+                                currentIndex = 0
+                                experimentModel.loadExperiment(0)
+                            }
+                        }
+                    }
+                    Rectangle {
+                        id: deleteBtn
+                        width: deleteLabel.implicitWidth + 40
+                        height: 50
+
+                        color: deleteMouseArea.pressed ? "#cc0000" : "#ff5555"
+                        border.color: "#555555"
+                        radius: 2
+
+                        Text {
+                            id: deleteLabel
+                            anchors.centerIn: parent
+                            text: "Delete current experiment"
+
+                            font.pixelSize: 20
+                            font.bold: true
+                            color: "white"
+                        }
+
+                        MouseArea {
+                            id: deleteMouseArea
+                            anchors.fill: parent
+                            onClicked: {
+                                var idx = myComboBox.currentIndex
+                                if (idx >= 0) {
+                                    // Remove (and Auto-Add if last item)
+                                    experimentModel.removeEntry(idx)
+
+                                    // Select the correct item
+                                    // If we deleted the last item and it auto-created a new one,
+                                    // count will be 1, so we select 0.
+                                    if (myComboBox.count > 0) {
+                                        myComboBox.currentIndex = 0
+                                        experimentModel.loadExperiment(0)
+                                    } else {
+                                        // This block should technically never be reached
+                                        // if the auto-create logic works
+                                        myComboBox.currentIndex = -1
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -297,6 +374,7 @@ Window {
             }
 
             RowLayout {
+                Layout.topMargin: -10
                 Button {
                     id: saveDataButton
                     text: "Save Data"
@@ -305,7 +383,6 @@ Window {
                     Layout.preferredWidth: 350
                     palette.button: "lightblue"
                     enabled: !window.inputBlocked
-
                     onClicked: buttonHandler.saveDataClick()
                 }
 

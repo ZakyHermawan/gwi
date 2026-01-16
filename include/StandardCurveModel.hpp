@@ -34,6 +34,9 @@ public:
 
     QHash<int, QByteArray> roleNames() const override;
 
+public slots:
+    void refreshModel();
+
 private slots:
     void onStandardCurveUpdated(int index, float value);
 };

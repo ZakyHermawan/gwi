@@ -50,6 +50,7 @@ HardwareController::HardwareController(uint8_t sensorAddr, int adapter, int ledP
      */
     m_sensorTimer->setInterval(2000); 
     connect(m_sensorTimer, &QTimer::timeout, this, &HardwareController::onSensorTimer);
+    begin();
 }
 
 /**

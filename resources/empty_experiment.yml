@@ -1,0 +1,45 @@
+concentration_coefficient: 1.0
+concentration_multiplier: 1.0
+cycle_threshold: 2
+efficiency: 0.0
+experiment_name: empty_experiment
+intensity_threshold: 1.1
+last_saved: 2026-01-16 06:30:51.60 +7
+led_intensity_level: 0
+light_sensor_data:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+max_cycle: 30
+r_squared: 0.0
+slope: 0.0
+standard_curve_points: []
+y_intercept: 0.0
+summary: The resulting data are reliable for quantification.

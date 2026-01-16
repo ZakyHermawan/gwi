@@ -4,6 +4,7 @@
 #include "SliderHandler.hpp"
 #include "HardwareController.hpp"
 #include "RawDataModel.hpp"
+#include "ExperimentModel.hpp"
 #include "StandardCurveModel.hpp"
 #include "RunButtonlEventFilter.hpp"
 
@@ -16,6 +17,8 @@
 #include <QDir>
 #include <QSharedPointer>
 #include <QQuickWindow>
+#include <QListWidgetItem>
+#include <QMap>
 
 #include <iostream>
 #include <cstdio>
@@ -54,18 +57,26 @@ int main(int argc, char *argv[])
 
     auto resourceFolderName = getenv("RESOURCE_FOLDER_PATH");
     auto mainQmlPath = QDir(resourceFolderName).filePath("../Main.qml");
-    auto examplePath = QDir(resourceFolderName).filePath("example.yml");
 
-    auto exampleFptr = fopen(examplePath.toStdString().c_str(), "r+");
-    QTextStream exampleIn(exampleFptr);
+    QDir dir = QDir(resourceFolderName).filePath("experiments");
+    QStringList fileNames = dir.entryList(QStringList() << "*.yml", QDir::Files);
 
-    auto exampleContent = exampleIn.readAll().toStdString();
-    fkyaml::node node = fkyaml::node::deserialize(exampleContent);
+    QMap<QString, fkyaml::node> experiments;
+    for(const auto& fileName: qAsConst(fileNames))
+    {
+        QFile file(dir.absoluteFilePath(fileName));
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            std::string content = file.readAll().toStdString();
+            experiments[fileName] = fkyaml::node::deserialize(content);
+        }
+    }
 
-    SliderHandler sliderHandler(&app);
     StateManager stateManager;
-    QSharedPointer<DataManager> dataManager(new DataManager(node));
+    QSharedPointer<DataManager> dataManager(new DataManager(experiments));
+
+    SliderHandler sliderHandler(dataManager, &app);
     RawDataModel rawDataModel(dataManager);
+    ExperimentModel experimentModel(dataManager->getExperimentNames(), dataManager);
     StandardCurveModel standardCurveModel(dataManager);
 
     // HardwareController hardwareController(0x23, 1, 18, &app);
@@ -89,6 +100,7 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("dataManager", dataManager.data());
 
     engine.rootContext()->setContextProperty("rawDataModel", &rawDataModel);
+    engine.rootContext()->setContextProperty("experimentModel", &experimentModel);
     engine.rootContext()->setContextProperty("standardCurveModel", &standardCurveModel);
     engine.load(mainQmlPath);
 
@@ -109,11 +121,8 @@ int main(int argc, char *argv[])
     auto retval = app.exec();
     if(retval != 0)
     {
-        std::cerr << "ERROR: Qt application exited with status code: " << retval << std::endl;
-        close_files(exampleFptr);
+        std::cerr << "ERROR: Qt application exited with status code: " << retval << std::endl << std::flush;
         return retval;
     }
-
-    close_files(exampleFptr);
     return 0;
 }

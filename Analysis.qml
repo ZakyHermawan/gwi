@@ -78,6 +78,25 @@ Rectangle {
                 font.pointSize: 24
             }
         }
+
+        RowLayout {
+            Text {
+                text: "Cycle Threshold = "
+                font.pointSize: 24
+                leftPadding: 30
+            }
+
+            Text {
+                text: {
+                    if(dataManager) {
+                        return String(dataManager.cycleThreshold)
+                    }
+                    return ""
+                }
+
+                font.pointSize: 24
+            }
+        }
     }
 
 }

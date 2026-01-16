@@ -5,14 +5,34 @@
 #include <QObject>
 #include <QList>
 #include <QPair>
+#include <QMap>
+
+#include <string>
 
 class DataManager : public QObject
 {
     Q_OBJECT
-
-    fkyaml::node m_root;
+public:
+    // List of intensity values for amplification plot and raw data
     QList<float> m_intensityValues;
     int m_currentIntensityValuesIndex;
+
+    // Current intensity in setup
+    int m_ledIntensity;
+    // Max cycle in setup
+    int m_maxCycle;
+    // Timestamp when the experiment is last saved
+    std::string m_lastSaved;
+    // Ct value
+    int m_cycleThreshold;
+    // Minimum light intensity so note the sample as "amplified"
+    double m_intensityThreshold;
+
+    // experiment names or key of m_experiments always have ".yml"
+    QMap<QString, fkyaml::node> m_experiments;
+    fkyaml::node m_currentExperiment;
+    QString m_currentExperimentName;
+    QList<QString> m_experimentNames;
 
     // Use QString for display on setup,
     // convert to float later for processing
@@ -26,6 +46,26 @@ class DataManager : public QObject
     double m_percentEfficiency;
     QString m_summary;
     QList<QPair<double, int>> m_xyLogStandardCurve;
+
+    Q_PROPERTY(int ledIntensity
+        MEMBER m_ledIntensity
+        NOTIFY ledIntensityChanged)
+
+    Q_PROPERTY(double intensityThreshold
+        MEMBER m_intensityThreshold
+        NOTIFY intensityThresholdChanged)
+
+    Q_PROPERTY(int cycleThreshold
+        MEMBER m_cycleThreshold
+        NOTIFY cycleThresholdChanged)
+
+    Q_PROPERTY(int maxCycle
+        MEMBER m_maxCycle
+        NOTIFY maxCycleChanged)
+
+    Q_PROPERTY(QString currentExperimentName
+        MEMBER m_currentExperimentName
+        NOTIFY currentExperimentNameChanged)
 
     Q_PROPERTY(QString concentrationCoefficient
         MEMBER m_concentrationCoefficient
@@ -55,14 +95,23 @@ class DataManager : public QObject
         MEMBER m_summary
         NOTIFY summaryChanged)
 
+    void updateLedIntensity();
+    void updateMaxCycle();
+    void updateIntensityThreshold();
+    void updateCycleThreshold();
+    void updateConcentrationCoefficient();
+    void updateConcentrationMultiplier();
+    void updateXYStandardCurve();
+    void createExperimentFromTemplate(const QString& newName);
+
 public:
     DataManager() = default;
-    DataManager(fkyaml::node& root);
+    DataManager(QMap<QString, fkyaml::node>& experiments);
     QList<float>& getIntensityValuesList();
     QList<QPair<double, int>>& getXyLogStandardCurve();
-
-    void save_data(std::string& fileName);
-
+    QList<QString>& getExperimentNames();
+    void save_data();
+    QString getCurrTimeStampStr();
     /*
      * Math Representation:
      *
@@ -78,9 +127,10 @@ public:
      * ȳ (y_bar) = Mean of Y
      * Σ         = Summation loop
      *
-     * Why use this?
+     * Why use formula this?
      * It prevents "Catastrophic Cancellation". By subtracting the mean first,
      * we calculate using small "delta" values rather than massive raw totals.
+     * Read: What Every Computer Scientist Should Know About Floating-Point Arithmetic
      * ======================================================================================
      */
     std::tuple<double, double, double>
@@ -125,7 +175,18 @@ public:
      */
     double calculatePCREfficiency(double slope);
 
+    void setCycleThreshold();
+    int getInitialLedIntensityValue();
+    void setInitialLedIntensityValue(int ledIntensityValue);
+    void removeExperiment(const QString experimentName);
+    void addExperiment(const QString experimentName);
+
 public slots:
+    Q_INVOKABLE void setMaxCycle(int maxCycle);
+    Q_INVOKABLE void updateCurrentExperiment();
+    // set every private members to the value of current experiment data
+    Q_INVOKABLE void loadCurrentExperiment();
+
     void calculateStandardCurve();
 
     void resetIntensityValues();
@@ -141,14 +202,22 @@ public slots:
     Q_INVOKABLE void setConcentrationMultiplier(float multiplier);
 
     Q_INVOKABLE int getCurrentIntensityValuesIndex() const;
+    Q_INVOKABLE void updateCurrentExperimentName(QString& currentExperimentName);
+    void resetCurrentExperiment();
 
 private slots:
     void updateSensorReading(float lux);
 
 signals:
     void intensityValuesUpdated(int index, float value);
-    void xyLogStandardCurveUpdated(int index, float value);
+    void xyLogStandardCurveUpdated();
     void currentIntensityValuesIndexChanged(int newIndex);
+    void maxCycleChanged();
+
+    void ledIntensityChanged();
+    void intensityThresholdChanged();
+    void cycleThresholdChanged();
+    void currentExperimentNameChanged();
 
     void concentrationCoefficientChanged();
     void concentrationMultiplierChanged();
@@ -158,4 +227,5 @@ signals:
     void slopeChanged();
     void percentEfficiencyChanged();
     void summaryChanged();
+    void standardCurveBoundsChanged();
 };

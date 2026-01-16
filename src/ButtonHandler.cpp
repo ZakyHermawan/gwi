@@ -52,13 +52,12 @@ void ButtonHandler::handleRunStart()
 void ButtonHandler::handleRunStop()
 {
     m_hardwareController->stopSensorReading();
+    m_dataManager->calculateStandardCurve();
+    m_dataManager->setCycleThreshold();
 }
 
 void ButtonHandler::saveDataClick()
 {
     auto resourceFolderName = getenv("RESOURCE_FOLDER_PATH");
-    auto examplePath = QDir(resourceFolderName).filePath("latest_data.yml");
-
-    std::string savedFileName(examplePath.toStdString());
-    m_dataManager->save_data(savedFileName);
+    m_dataManager->save_data();
 }

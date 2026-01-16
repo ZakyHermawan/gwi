@@ -4,7 +4,7 @@ project(gwi VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Charts VirtualKeyboard)
+find_package(Qt6 COMPONENTS Quick Charts VirtualKeyboard REQUIRED)
 
 # Detect if building on a RPi
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm" OR CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64")
@@ -39,7 +39,6 @@ qt_add_qml_module(appgwi
     QML_FILES
         Main.qml
         SOURCES include/ButtonHandler.hpp
-        RESOURCES resources/example.yml
         SOURCES include/fkYAML.hpp
         RESOURCES resources/resources.qrc
         SOURCES src/StateManager.cpp
@@ -55,7 +54,6 @@ qt_add_qml_module(appgwi
         SOURCES src/RawDataModel.cpp
         SOURCES include/HardwareController.hpp
         SOURCES src/HardwareController.cpp
-        RESOURCES resources/latest_data.yml
         SOURCES include/RunButtonlEventFilter.hpp
         SOURCES src/RunButtonlEventFilter.cpp
         QML_FILES StandardCurve.qml
@@ -64,6 +62,9 @@ qt_add_qml_module(appgwi
         QML_FILES Summary.qml
         SOURCES include/StandardCurveModel.hpp
         SOURCES src/StandardCurveModel.cpp
+        SOURCES include/ExperimentModel.hpp
+        SOURCES src/ExperimentModel.cpp
+        RESOURCES resources/empty_experiment.yml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
