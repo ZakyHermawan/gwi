@@ -460,6 +460,17 @@ void DataManager::loadCurrentExperiment()
 
     m_maxCycle = root["max_cycle"].as_int();
     setIntensityValuesSize(m_maxCycle);
+
+    m_currentIntensityValuesIndex = 0;
+    m_intensityValues.clear();
+    if (root.contains("light_sensor_data") && root["light_sensor_data"].is_sequence()) {
+        int i = 0;
+        for(auto& intensity: root["light_sensor_data"].as_seq())
+        {
+            m_intensityValues.push_back(intensity.as_float());
+            ++m_currentIntensityValuesIndex;
+        }
+    }
     emit maxCycleChanged();
 
     m_intensityThreshold = root["intensity_threshold"].as_float();
@@ -478,11 +489,6 @@ void DataManager::loadCurrentExperiment()
     emit summaryChanged();
 
     m_xyLogStandardCurve.clear();
-    if (root["standard_curve_points"].as_seq().size() == 0)
-    {
-        calculateStandardCurve();
-        emit xyLogStandardCurveUpdated();
-    }
     for(auto& point: root["standard_curve_points"].as_seq())
     {
         double x = point[0].as_float();

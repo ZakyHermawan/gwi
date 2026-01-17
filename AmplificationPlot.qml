@@ -27,9 +27,10 @@ ColumnLayout {
             ValueAxis {
                 id: axisX
                 titleText: "Cycle"
+
                 tickCount: {
                     if(dataManager) {
-                        var numData = dataManager.getIntensityValuesSize()
+                        var numData = dataManager.maxCycle
                         if(numData > 10) return numData / 2
                         return numData
                     }
@@ -40,9 +41,9 @@ ColumnLayout {
                 min: 1
                 max: {
                     if(dataManager) {
-                        return dataManager.getIntensityValuesSize()
+                        return dataManager.maxCycle
                     }
-                    return 1
+                    return 30
                 }
             }
 

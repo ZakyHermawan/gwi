@@ -5,6 +5,14 @@ RawDataModel::RawDataModel(QSharedPointer<DataManager> dataManager)
 {
     connect(m_dataManager.data(), &DataManager::intensityValuesUpdated,
             this, &RawDataModel::onIntensityValuesUpdated);
+
+    // When experiment changes, reset the whole model
+    connect(m_dataManager.data(), &DataManager::currentExperimentNameChanged,
+            this, &RawDataModel::refresh);
+
+    // Also reset if the max cycle changes (e.g., user edits Setup)
+    connect(m_dataManager.data(), &DataManager::maxCycleChanged,
+            this, &RawDataModel::refresh);
 }
 
 int RawDataModel::rowCount(const QModelIndex &) const
@@ -82,4 +90,10 @@ void RawDataModel::onIntensityValuesUpdated(int index, float value)
     QModelIndex endIndex = startIndex;
     
     emit dataChanged(startIndex, endIndex, {Qt::DisplayRole});
+}
+
+void RawDataModel::refresh()
+{
+    beginResetModel();
+    endResetModel();
 }
