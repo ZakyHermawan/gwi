@@ -275,7 +275,7 @@ Window {
                 Layout.alignment: Qt.AlignLeft
                 Layout.preferredHeight: 80
 
-                // Ensure the main wrapper expands to fit both the ComboBox AND the new wide button
+                // Ensure the main wrapper expands to fit both the ComboBox
                 Layout.preferredWidth: contentRow.width
                 color: "transparent"
 
@@ -292,6 +292,7 @@ Window {
                         model: experimentModel
                         editable: true
                         textRole: "experimentName"
+                        enabled: !window.inputBlocked
 
                         onActivated: (index) => {
                             if (index >= 0) {
@@ -322,6 +323,7 @@ Window {
                         id: deleteBtn
                         width: deleteLabel.implicitWidth + 40
                         height: 50
+                        enabled: !window.inputBlocked
 
                         color: deleteMouseArea.pressed ? "#cc0000" : "#ff5555"
                         border.color: "#555555"
@@ -340,6 +342,7 @@ Window {
                         MouseArea {
                             id: deleteMouseArea
                             anchors.fill: parent
+
                             onClicked: {
                                 var idx = myComboBox.currentIndex
                                 if (idx >= 0) {
