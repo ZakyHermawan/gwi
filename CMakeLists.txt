@@ -64,7 +64,7 @@ qt_add_qml_module(appgwi
         SOURCES src/StandardCurveModel.cpp
         SOURCES include/ExperimentModel.hpp
         SOURCES src/ExperimentModel.cpp
-        RESOURCES resources/empty_experiment.yml
+        RESOURCES resources/templates/empty_experiment.yml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

@@ -49,7 +49,7 @@ ColumnLayout {
 
             ValueAxis {
                 id: axisY
-                titleText: "Fluorescence Intensity"
+                titleText: "Flourescence Intensity"
                 min: 0
             }
 

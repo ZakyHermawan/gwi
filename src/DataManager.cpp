@@ -354,14 +354,40 @@ QString DataManager::getCurrTimeStampStr()
 
 void DataManager::setCycleThreshold()
 {
-    for(unsigned int i = 0; i < m_intensityValues.size(); ++i)
+    m_cycleThreshold = -1;
+    for(size_t i = 0; i < m_intensityValues.size(); ++i)
     {
         if (m_intensityValues[i] >= m_intensityThreshold)
         {
             m_cycleThreshold = i + 1;
-            return;
+            break;
         }
     }
+    // Do not add point to the curve if no intensity that is higher than intensity threshold
+    if(m_cycleThreshold == -1) return;
+
+    auto coeff = m_concentrationCoefficient.toFloat();
+    auto multiplier = m_concentrationMultiplier;
+
+    // Calculate absolute concentration
+    // We cast to double for better precision in log calculations
+    double concentration = static_cast<double>(coeff) * static_cast<double>(multiplier);
+
+    // Calculate Log10
+    double logConcentration = 0.0;
+
+    // Safety check: Logarithm is undefined for 0 or negative numbers
+    if (concentration > 0.0) {
+        logConcentration = std::log10(concentration);
+    } else {
+        // Handle the error case appropriately for your app
+        // e.g., set to 0, return, or log a warning
+        qWarning() << "Cannot calculate log of non-positive concentration:" << concentration;
+    }
+
+    auto x = logConcentration;
+    auto y = m_cycleThreshold;
+    m_xyLogStandardCurve.push_back(std::make_pair(x, y));
 }
 
 int DataManager::getInitialLedIntensityValue()
@@ -590,7 +616,7 @@ void DataManager::createExperimentFromTemplate(const QString& experimentName)
     }
 
     QDir dir = QDir(resourceFolderName).filePath("experiments");
-    QString absoluteEmptyPath = dir.absoluteFilePath("../empty_experiment.yml");
+    QString absoluteEmptyPath = dir.absoluteFilePath("templates/empty_experiment.yml");
     QString absolutePath = dir.absoluteFilePath(experimentName);
 
     std::ifstream templateFile(absoluteEmptyPath.toStdString());

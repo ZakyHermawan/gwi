@@ -52,8 +52,8 @@ void ButtonHandler::handleRunStart()
 void ButtonHandler::handleRunStop()
 {
     m_hardwareController->stopSensorReading();
-    m_dataManager->calculateStandardCurve();
     m_dataManager->setCycleThreshold();
+    m_dataManager->calculateStandardCurve();
 }
 
 void ButtonHandler::saveDataClick()

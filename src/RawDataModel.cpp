@@ -38,7 +38,7 @@ QVariant RawDataModel::data(const QModelIndex &index, int role) const
             }
             else
             {
-                return QString("Intensity Value (lx)");
+                return QString("Flourescence Intensity");
             }
         }
         else
