@@ -42,6 +42,7 @@ ColumnLayout {
                 if (!pressed && dataManager && typeof dataManager !== "undefined") {
                     dataManager.updateCurrentExperiment()
                     dataManager.loadCurrentExperiment()
+                    sliderHandler.changeSliderValue(dataManager.ledIntensity)
                 }
             }
         }
